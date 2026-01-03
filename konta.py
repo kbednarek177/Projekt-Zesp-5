@@ -70,3 +70,10 @@ def nadpisz_plik(nazwy_hasla, nazwy_wynik, dane):
 directory = Path(__file__).resolve().parent   ##- chat gpt
 
 dane = directory / "zapisane_dane.json"       ##- chat gpt
+
+if(dane.stat().st_size != 0):
+    tablica_dane = wczytaj_dane(dane)
+else:
+    tablica_dane = [dict(), dict()]
+
+
