@@ -51,10 +51,55 @@ def sprawdz_haslo(nazwa, haslo, nazwy_hasla):   ## sprawdzanie hasla
 
 
 def zaloguj(nazwa, haslo, nazwy_hasla):
+    nazwa = input()
+    while(nazwa not in nazwy_hasla):
+        print("Nie ma takiego użytkownika")
+        nazwa = input()
+
+    haslo = input()
+    
     if(sprawdz_haslo(nazwa, haslo, nazwy_hasla) == True):
-        return True
-    return False
+        return nazwa
+    return int(-1)
         
+
+
+## funkcje zwiazane z najlepszymi wynikami (korzystajace z T[1])
+
+def tablica_wynikow(nazwy_wynik):
+    
+    nazwy_wynik_int = dict()
+    
+    for x in nazwy_wynik:
+        y = int(nazwy_wynik[x])
+        nazwy_wynik_int[x] = y
+    
+    wartosci = []
+    for x in nazwy_wynik_int:
+        wartosci.append(nazwy_wynik_int[x])
+    
+    
+    wartosci.sort()
+    wartosci.reverse()
+    
+    s_wartosci = wartosci[:3]           
+    wynik = dict()
+    
+    for i in s_wartosci:
+        for x in nazwy_wynik_int:
+            if(nazwy_wynik_int[x] == i):
+                wynik[x] = i
+            
+    return wynik
+
+
+def naj_wynik(wynik, nazwa, nazwy_wynik):
+    if(nazwa not in nazwy_wynik):
+        nazwy_wynik[nazwa] = wynik
+    elif(wynik > int(nazwy_wynik[nazwa])):
+        nazwy_wynik[nazwa] = wynik
+
+
 
 ##funkcje zwiazane z nadpisywaniem pliku z danymi
 
