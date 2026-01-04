@@ -3,24 +3,66 @@ import curses
 from curses import wrapper
 
 def rozgrywka(stdscr, poziom):
+    wysokosc_ekranu, szerokosc_ekranu = stdscr.getmaxyx()   # pobieranie wymiarow ekranu, zeby wiedziec gdzie jest "prawy gorny rog"
 
-    zegar = curses.newwin(1, 20, 0, 0) #zegar odliczajacy sekundy
+    # te wartosci sa jeszcze do zmienienia ...
+    if poziom == 'latwy':
+        liczba_flag = 15
+    elif poziom == 'sredni':
+        liczba_flag = 30
+    else:
+        liczba_flag = 45
+
+    zegar = curses.newwin(1, 20, 0, 0)    # zegar odliczajacy w sekundach
     zegar.refresh()
+
+    okno_flagi = curses.newwin(1, 20, 0, szerokosc_ekranu - 20)    # 20 to szerokosc okna flagi
 
     stdscr.erase()
     stdscr.refresh()
  
     czas = 0
     start = time.time()
-    while True:             #tutaj trzeba pracowac nad wyswietlaniem planszy
+
+    while True:     # tutaj trzeba pracowac nad wyswietlaniem planszy
+        # ZEGAR:
         zegar.erase()
 
-        zegar.addstr(f"Time: {czas}")
+        sekundy = czas % 60          
+        wszystkie_minuty = czas // 60 
+
+        minuty = wszystkie_minuty % 60      
+        godziny = wszystkie_minuty // 60
+        
+        zegar.addstr(f"Czas gry: {godziny:02}:{minuty:02}:{sekundy:02}")    # wyswietlanie czasu w formacie 00:00:00
+
         zegar.refresh()
+
+        # FLAGI:
+        okno_flagi.erase()
+
+        tekst_flagi = f"Pozostale flagi: {liczba_flag}"
+        okno_flagi.addstr(0, 0, tekst_flagi)
+
+        okno_flagi.refresh()
 
         if time.time() - start >= 1:
             czas = czas + 1
             start = time.time()
+
+        try:    # zapobieganie blokowaniu sie gry
+            klawisz = stdscr.getkey()
+            if klawisz == 'q':
+                break
+            
+            # (Tutaj w przyszlosci dodamy stawianie flag)
+            # if klawisz == 'f':
+            #     liczba_flag -= 1
+
+        except:
+            pass
+            
+        curses.napms(50)    # dodalam opoznienie by nie wykorzystywac 100% procesora
         
 
 def menu_glowne(stdscr):
@@ -29,9 +71,11 @@ def menu_glowne(stdscr):
     
     curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_GREEN)
 
-    stdscr.nodelay(True) #nie czeka na nacisniecie klawisza, dzieki czemu inne funkcje dzieja sie w tle
+    stdscr.nodelay(True) # nie czeka na nacisniecie klawisza, dzieki czemu inne funkcje dzieja sie w tle
+
+    #stdscr.timeout(50) -> mozliwe ze to by bylo lepsze zamiast nodelay + napms ???
     
-    menu = ['Nowa Gra', 'Wczytaj Gre', 'Zasady Gry', 'Wyjscie']
+    menu = ['Nowa Gra', 'Wczytaj Gre', 'Ranking', 'Zasady Gry', 'Wyjscie']
     poziomy = ['Latwy  ★☆☆☆☆ ', 'Sredni ★★★☆☆ ', 'Trudny ★★★★★ ']
     tytuly = ["--- SAPER ---", "--- POZIOMY ---"]
     ekran = [menu, poziomy]
@@ -69,7 +113,7 @@ def menu_glowne(stdscr):
         elif klawisz == 'KEY_DOWN':
             obecny_rzad = (obecny_rzad + 1) % len(ekran[iterator])
 
-        elif klawisz == 'q': #cofnij - dokonczyc, gdy zrobimy zasady gry oraz logowanie
+        elif klawisz == 'q': # cofnij - dokonczyc, gdy zrobimy zasady gry oraz logowanie
             if iterator == 1:
                 stdscr.clear()
                 iterator = 0
@@ -79,17 +123,23 @@ def menu_glowne(stdscr):
             
             if wybrana_opcja == 'Wyjscie':
                 break
+            
             elif wybrana_opcja == 'Nowa Gra':
                 stdscr.clear()
                 iterator = 1
+
             elif wybrana_opcja == 'Wczytaj Gre':
-                pass #wczytaj zapamietana gdzies plansze
+                pass # wczytaj zapamietana gdzies plansze
+            
             elif wybrana_opcja == 'Zasady Gry':
-                pass #Zrobic nowego windowa lub pada na zasady, ktore trzeba w README.md uzupelnic
+                pass # Zrobic nowego windowa lub pada na zasady, ktore trzeba w README.md uzupelnic
+            
             elif wybrana_opcja == poziomy[0]:
                 rozgrywka(stdscr, 'latwy')
+
             elif wybrana_opcja == poziomy[1]:
                 rozgrywka(stdscr, 'sredni')
+
             elif wybrana_opcja == poziomy[2]:
                 rozgrywka(stdscr, 'trudny')
 
