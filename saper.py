@@ -1,17 +1,12 @@
-import numpy as np
 
 class Plansza:
-    poziomy = {1:(0,0,0)} #poziom, który jest podawany przy inicjacji, po czym 3 wartości, odpowiednio: szerokosc, wysokosc i ilość bomb
-
-    def __init__(self, poziom):
-        self.poziom = poziom
-        self.szer = self.poziomy[poziom][0]
-        self.wys = self.poziomy[poziom][1]
-        self.bomby = self.poziomy[poziom][2]
-        self.plansza = np.zeros(self.wys,self.szer)
-        self.odkryte = np.zeros(self.wys,self.szer)
-        self.flagi = np.zeros(self.wys,self.szer)
-
+    
+    def __init__(self, szer, wys, bomby):
+        self.szer = szer
+        self.wys = wys
+        self.bomby = bomby
+        self.plansza = [[0 for i in range(szer)] for j in range(wys)]  # plansza[wiersz][kolumna]
+        self.wyswietlana = [[0 for i in range(szer)] for j in range(wys)]
 
 def generowanie(plansza):
     pass
