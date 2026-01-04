@@ -5,13 +5,35 @@ from curses import wrapper
 def rozgrywka(stdscr, poziom):
     wysokosc_ekranu, szerokosc_ekranu = stdscr.getmaxyx()   # pobieranie wymiarow ekranu, zeby wiedziec gdzie jest "prawy gorny rog"
 
-    # te wartosci sa jeszcze do zmienienia ...
-    if poziom == 'latwy':
-        liczba_flag = 15
+    # Tworzenie kolorow potrzebnych do wyswietlania planszy
+    curses.init_pair(2, 8, 7)
+    OdkrytePole = curses.color_pair(2)
+    curses.init_pair(3, 7, 8)
+    OdkrytePoleReverse = curses.color_pair(3)
+    curses.init_pair(4, 4, 8)
+    Liczba1 = curses.color_pair(4)
+    curses.init_pair(5, 2, 8)
+    Liczba2 = curses.color_pair(5)
+    curses.init_pair(6, 9, 8)
+    Liczba3 = curses.color_pair(6)
+    curses.init_pair(7, 5, 8)
+    Liczba4 = curses.color_pair(7)
+    curses.init_pair(8, 1, 8)
+    Liczba5 = curses.color_pair(8)
+    curses.init_pair(9, 16, 8)
+    Liczba6 = curses.color_pair(9)
+    curses.init_pair(10, 0, 8)
+    Liczba7 = curses.color_pair(10)
+    curses.init_pair(11, 6, 8)
+    Liczba8 = curses.color_pair(11)
+
+    # ustalic z innymi czy ten sposób i wartosci beda ok, bo proszenie uzytkownika o wielkosc planszy jest trudniejsze
+    if poziom == 'latwy':    # poziomy
+        liczba_flag = 10
     elif poziom == 'sredni':
-        liczba_flag = 30
+        liczba_flag = 40
     else:
-        liczba_flag = 45
+        liczba_flag = 99
 
     zegar = curses.newwin(1, 20, 0, 0)    # zegar odliczajacy w sekundach
     zegar.refresh()
@@ -23,6 +45,19 @@ def rozgrywka(stdscr, poziom):
  
     czas = 0
     start = time.time()
+
+    #tworzenie tymczasowej planszy aby spróbowac ja wyswietlic - zamiast tego pojawi sie tu potem wywolanie funkcji GENEROWANIE
+    przykladowa_plansza = curses.newwin(27, 27, 3, 3)
+    przykladowa_plansza.refresh()
+    tablica = [[10, 10, 10, 10, 10, 10, 10, 10, 10], 
+               [10, 0, 0, 0, 0, 0, 0, 0, 10], 
+               [10, 10, 10, 10, 10, 10, 10, 10, 10], 
+               [10, 10, 1, 10, 5, 10, 9, 10, 10], 
+               [10, 10, 2, 10, 6, 10, 9, 10, 10], 
+               [10, 10, 3, 10, 7, 10, -1, 10, 10], 
+               [10, 10, 4, 10, 8, 10, -1, 10, 10], 
+               [10, 10, 10, 10, 10, 10, 10, 10, 10], 
+               [10, 10, 10, 10, 10, 10, 10, 10, 10]]
 
     while True:     # tutaj trzeba pracowac nad wyswietlaniem planszy
         # ZEGAR:
@@ -46,6 +81,139 @@ def rozgrywka(stdscr, poziom):
 
         okno_flagi.refresh()
 
+        # AKTUALNY STAN PLANSZY
+        przykladowa_plansza.erase()
+
+        # dodac rysowanie siatki obrysow za pomoca funkcji rectangle
+
+        for rzad in range(len(tablica)):
+
+            for kolumna in range(len(tablica[rzad])):    #Wypelniam kwadraty 3x3 kolorami i symbolami przedstawiajacymi dane pole
+
+                if tablica[rzad][kolumna] == 0: #Odkryte pole 
+
+                    for i in range(3):  
+
+                        for j in range(3):
+
+                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePole) 
+                    
+                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, ' ', OdkrytePoleReverse)
+
+                elif tablica[rzad][kolumna] == 1: #Pole z jedna sasiadujaca bomba
+
+                    for i in range(3):
+
+                        for j in range(3):
+
+                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                    
+                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '1', Liczba1)
+
+                elif tablica[rzad][kolumna] == 2:
+
+                    for i in range(3):
+
+                        for j in range(3):
+
+                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                    
+                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '2', Liczba2)
+
+                elif tablica[rzad][kolumna] == 3:
+
+                    for i in range(3):
+
+                        for j in range(3):
+
+                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                    
+                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '3', Liczba3)
+
+                elif tablica[rzad][kolumna] == 4:
+
+                    for i in range(3):
+
+                        for j in range(3):
+
+                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                    
+                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '4', Liczba4)
+
+                elif tablica[rzad][kolumna] == 5:
+
+                    for i in range(3):
+
+                        for j in range(3):
+
+                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                    
+                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '5', Liczba5)
+
+                elif tablica[rzad][kolumna] == 6:
+                    
+                    for i in range(3):
+
+                        for j in range(3):
+
+                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                    
+                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '6', Liczba6)
+
+                elif tablica[rzad][kolumna] == 7:
+                    
+                    for i in range(3):
+
+                        for j in range(3):
+
+                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                    
+                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '7', Liczba7)
+
+                elif tablica[rzad][kolumna] == 8:
+                    
+                    for i in range(3):
+
+                        for j in range(3):
+
+                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                    
+                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '8', Liczba8)
+
+                elif tablica[rzad][kolumna] == 9: #Oflagowane pole
+
+                    for i in range(3):
+
+                        for j in range(3):
+
+                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePole) 
+                    
+                    przykladowa_plansza.addch(kolumna*3+1, rzad*3+1, '🚩', OdkrytePoleReverse)
+
+                elif tablica[rzad][kolumna] == 10: #Zakryte pole
+                    
+                    for i in range(3):
+
+                        for j in range(3):
+
+                            try:
+                                przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                            except:
+                                pass
+
+                elif tablica[rzad][kolumna] == -1: #Bomba
+                    
+                    for i in range(3):
+
+                        for j in range(3):
+
+                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                    
+                    przykladowa_plansza.addch(kolumna*3+1, rzad*3+1, '💣', OdkrytePoleReverse)
+        
+        przykladowa_plansza.refresh()
+
+        # AKTUALIZOWANIE WSZYSTKIEGO I ODCZYTYWANIE POSUNIEC UZYTOWNIKA
         if time.time() - start >= 1:
             czas = czas + 1
             start = time.time()
@@ -55,6 +223,8 @@ def rozgrywka(stdscr, poziom):
             if klawisz == 'q':
                 break
             
+            #TUTAJ WSTAWIC STEROWANIE I NASLUCHIWANIE KLIKNIECIA KLAWISZY
+
             # (Tutaj w przyszlosci dodamy stawianie flag)
             # if klawisz == 'f':
             #     liczba_flag -= 1
