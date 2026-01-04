@@ -1,27 +1,31 @@
 
 class Plansza:
-    
+
     def __init__(self, szer, wys, bomby):
         self.szer = szer
         self.wys = wys
         self.bomby = bomby
         self.plansza = [[0 for i in range(szer)] for j in range(wys)]  # plansza[wiersz][kolumna]
-        self.wyswietlana = [[0 for i in range(szer)] for j in range(wys)]
+        self.wyswietlana = [[9 for i in range(szer)] for j in range(wys)]
 
 def generowanie(plansza):
     pass
-        #funkcja która generuje planszę(tablicę) o wymiarach self.wys i self.szer, która ma self.bomby bomb, gdzie żadna nie występuje w miejscu pirwszy_ruch.
-        #funkcja zmienia self.plansza
+        #funkcja która generuje planszę(tablicę) o wymiarach plansza.wys i plansza.szer, która ma plansza.bomby bomb
+        #funkcja zmienia plansza.plansza
         
-def Ruch(pozycja, plansza):
-    pass
-        #funkcja który sprawdza, czy można odkryć element, odkrywa i sprawdza czy partia jest wygrana/przegrana, usuwa flagi w odkrytych polach
-        #funkcja zmienia self.odkryte na podstawie self.plansza
+def ruch(pozycja, plansza):
+    x, y = pozycja #y - wiersz, x- kolumna
+        #funkcja który sprawdza, czy można odkryć element, odkrywa i sprawdza czy partia jest wygrana/przegrana
+        #funkcja zmienia plansza.wyswietlana
         
-def Postaw_Flage(pozycja, plansza):
-    pass
-        #funkcja która sprawdza, czy miejsce jedt odkryte, jeśli nie to daje/usuwa flagę((pole + 1)%2)
-        #zmienia self.flagi
+def postaw_flage(pozycja, plansza):
+    x, y = pozycja #y - wiersz, x- kolumna
+    if plansza.wyswietlana[y][x] == 9:
+        plansza.wyswietlana[y][x] = 10
+    elif plansza.wyswietlana[y][x] == 10:
+        plansza.wyswietlana[y][x] = 9
+        #funkcja która sprawdza, czy miejsce jedt zakryte, jeśli tak to daje/usuwa flagę
+        #zmienia plansza.wyswietlana
 
 
 

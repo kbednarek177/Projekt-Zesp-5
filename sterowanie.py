@@ -1,5 +1,5 @@
 from pynput.keyboard import Key, KeyCode, Listener
-from saper import Postaw_Flage, Ruch
+from saper import postaw_flage, ruch
 
 
 def sterowanie_saper(key, plansza, pozycja, wygrana):
@@ -35,11 +35,11 @@ def sterowanie_saper(key, plansza, pozycja, wygrana):
     
     #interakcja e i q 
     if key == KeyCode.from_char('q'):
-        Postaw_Flage(pozycja, plansza)
+        postaw_flage(pozycja, plansza)
         return True, pozycja
     
     if key == KeyCode.from_char('e'):
-        wynik = Ruch(pozycja, plansza)
+        wynik = ruch(pozycja, plansza)
         return wynik, pozycja
     
     if key == KeyCode.from_char('r'):
