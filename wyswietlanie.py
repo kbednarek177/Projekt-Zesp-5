@@ -1,31 +1,37 @@
 import time
 import curses
 from curses import wrapper
+#from curses.textpad import rectangle
 
 def rozgrywka(stdscr, poziom):
     wysokosc_ekranu, szerokosc_ekranu = stdscr.getmaxyx()   # pobieranie wymiarow ekranu, zeby wiedziec gdzie jest "prawy gorny rog"
 
     # Tworzenie kolorow potrzebnych do wyswietlania planszy
-    curses.init_pair(2, 8, 7)
+    curses.init_pair(2, 238, 235)
     OdkrytePole = curses.color_pair(2)
-    curses.init_pair(3, 7, 8)
+    curses.init_pair(3, 235, 238)
     OdkrytePoleReverse = curses.color_pair(3)
-    curses.init_pair(4, 4, 8)
+    curses.init_pair(4, 4, 238)
     Liczba1 = curses.color_pair(4)
-    curses.init_pair(5, 2, 8)
+    curses.init_pair(5, 2, 238)
     Liczba2 = curses.color_pair(5)
-    curses.init_pair(6, 9, 8)
+    curses.init_pair(6, 9, 238)
     Liczba3 = curses.color_pair(6)
-    curses.init_pair(7, 5, 8)
+    curses.init_pair(7, 5, 238)
     Liczba4 = curses.color_pair(7)
-    curses.init_pair(8, 1, 8)
+    curses.init_pair(8, 1, 238)
     Liczba5 = curses.color_pair(8)
-    curses.init_pair(9, 16, 8)
+    curses.init_pair(9, 16, 238)
     Liczba6 = curses.color_pair(9)
-    curses.init_pair(10, 0, 8)
+    curses.init_pair(10, 0, 238)
     Liczba7 = curses.color_pair(10)
-    curses.init_pair(11, 6, 8)
+    curses.init_pair(11, 6, 238)
     Liczba8 = curses.color_pair(11)
+    curses.init_pair(12, 9, 235)
+    Flaga = curses.color_pair(12)
+    curses.init_pair(13, 202, 238)
+    Bomba = curses.color_pair(13)
+
 
     # ustalic z innymi czy ten sposób i wartosci beda ok, bo proszenie uzytkownika o wielkosc planszy jest trudniejsze
     if poziom == 'latwy':    # poziomy
@@ -47,7 +53,7 @@ def rozgrywka(stdscr, poziom):
     start = time.time()
 
     #tworzenie tymczasowej planszy aby spróbowac ja wyswietlic - zamiast tego pojawi sie tu potem wywolanie funkcji GENEROWANIE
-    przykladowa_plansza = curses.newwin(27, 27, 3, 3)
+    przykladowa_plansza = curses.newwin(10, 27, wysokosc_ekranu//2 - 4, szerokosc_ekranu//2 - 13) # jest o jedną za dużo linie (10 zamiast 9), bo z jakiegoś powodu program jej potrzebuje???
     przykladowa_plansza.refresh()
     tablica = [[10, 10, 10, 10, 10, 10, 10, 10, 10], 
                [10, 0, 0, 0, 0, 0, 0, 0, 10], 
@@ -58,6 +64,13 @@ def rozgrywka(stdscr, poziom):
                [10, 10, 4, 10, 8, 10, -1, 10, 10], 
                [10, 10, 10, 10, 10, 10, 10, 10, 10], 
                [10, 10, 10, 10, 10, 10, 10, 10, 10]]
+    
+    #boki pojedynczego pola
+    bokx = 3 
+    boky = 1
+    #wspolrzedne srodka pojedynczego pola numerujac od zera
+    srodekx = 1
+    srodeky = 0
 
     while True:     # tutaj trzeba pracowac nad wyswietlaniem planszy
         # ZEGAR:
@@ -88,128 +101,123 @@ def rozgrywka(stdscr, poziom):
 
         for rzad in range(len(tablica)):
 
-            for kolumna in range(len(tablica[rzad])):    #Wypelniam kwadraty 3x3 kolorami i symbolami przedstawiajacymi dane pole
+            for kolumna in range(len(tablica[rzad])):    #Wypelniam prostokaty bokx na boky kolorami i symbolami przedstawiajacymi dane pole
 
                 if tablica[rzad][kolumna] == 0: #Odkryte pole 
 
-                    for i in range(3):  
+                    for i in range(boky):  
 
-                        for j in range(3):
+                        for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePole) 
-                    
-                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePole) 
 
                 elif tablica[rzad][kolumna] == 1: #Pole z jedna sasiadujaca bomba
 
-                    for i in range(3):
+                    for i in range(boky):
 
-                        for j in range(3):
+                        for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '1', Liczba1)
+                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '1', Liczba1)
 
                 elif tablica[rzad][kolumna] == 2:
 
-                    for i in range(3):
+                    for i in range(boky):
 
-                        for j in range(3):
+                        for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '2', Liczba2)
+                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '2', Liczba2)
 
                 elif tablica[rzad][kolumna] == 3:
 
-                    for i in range(3):
+                    for i in range(boky):
 
-                        for j in range(3):
+                        for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '3', Liczba3)
+                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '3', Liczba3)
 
                 elif tablica[rzad][kolumna] == 4:
 
-                    for i in range(3):
+                    for i in range(boky):
 
-                        for j in range(3):
+                        for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '4', Liczba4)
+                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '4', Liczba4)
 
                 elif tablica[rzad][kolumna] == 5:
 
-                    for i in range(3):
+                    for i in range(boky):
 
-                        for j in range(3):
+                        for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '5', Liczba5)
+                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '5', Liczba5)
 
                 elif tablica[rzad][kolumna] == 6:
                     
-                    for i in range(3):
+                    for i in range(boky):
 
-                        for j in range(3):
+                        for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '6', Liczba6)
+                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '6', Liczba6)
 
                 elif tablica[rzad][kolumna] == 7:
                     
-                    for i in range(3):
+                    for i in range(boky):
 
-                        for j in range(3):
+                        for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '7', Liczba7)
+                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '7', Liczba7)
 
                 elif tablica[rzad][kolumna] == 8:
                     
-                    for i in range(3):
+                    for i in range(boky):
 
-                        for j in range(3):
+                        for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*3+1, rzad*3+1, '8', Liczba8)
+                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '8', Liczba8)
 
                 elif tablica[rzad][kolumna] == 9: #Oflagowane pole
 
-                    for i in range(3):
+                    for i in range(boky):
 
-                        for j in range(3):
+                        for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePole) 
+                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePole) 
                     
-                    przykladowa_plansza.addch(kolumna*3+1, rzad*3+1, '🚩', OdkrytePoleReverse)
+                    przykladowa_plansza.addch(kolumna*boky+srodeky, rzad*bokx+srodekx, '⚑', Flaga)
 
                 elif tablica[rzad][kolumna] == 10: #Zakryte pole
                     
-                    for i in range(3):
+                    for i in range(boky):
 
-                        for j in range(3):
+                        for j in range(bokx):
 
-                            try:
-                                przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
-                            except:
-                                pass
+                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
 
                 elif tablica[rzad][kolumna] == -1: #Bomba
                     
-                    for i in range(3):
+                    for i in range(boky):
 
-                        for j in range(3):
+                        for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*3+i, rzad*3+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addch(kolumna*3+1, rzad*3+1, '💣', OdkrytePoleReverse)
+                    przykladowa_plansza.addch(kolumna*boky+srodeky, rzad*bokx+srodekx, '✸', Bomba)
         
         przykladowa_plansza.refresh()
 
