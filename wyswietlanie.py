@@ -255,19 +255,15 @@ def rozgrywka(stdscr, poziom):
             #PORUSZANIE SIĘ AWSD
             elif key == ord('a'):
                 pozycja = ((pozycja[0]-1)%plansza.szer, pozycja[1])
-                return True, pozycja
             
             elif key == ord('w'):
                 pozycja = ((pozycja[0]), (pozycja[1]+1)%plansza.wys)
-                return True, pozycja
             
             elif key == ord('s'):
-                pozycja = ((pozycja[0]), (pozycja[1]-1)%plansza.wys)
-                return True, pozycja
+                pozycja = ((pozycja[0]), (pozycja[1]-1)%plansza.wys) 
             
             elif key == ord('d'):
                 pozycja = ((pozycja[0]+1)%plansza.szer, pozycja[1])
-                return True, pozycja
             
             #INTERAKCJA E I Q
             elif key == ord('q'):
