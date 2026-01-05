@@ -1,6 +1,8 @@
 import time
 import curses
 from curses import wrapper
+from saper import postaw_flage, ruch, Plansza
+# from konta import zapisz #aktualnie nie istnieje
 #from curses.textpad import rectangle
 
 def rozgrywka(stdscr, poziom):
@@ -65,6 +67,11 @@ def rozgrywka(stdscr, poziom):
                [10, 10, 10, 10, 10, 10, 10, 10, 10], 
                [10, 10, 10, 10, 10, 10, 10, 10, 10]]
     
+    #zainicjowana plansza. na razie nic nie robi.
+    szer, wys, bomby = 9,9,10
+    plansza = Plansza(szer, wys, bomby)
+    # do wyswietlenia: plansza.wyswietlana. plansza.wyzwietlana[y = wiersz][x = kolumna]
+    
     #boki pojedynczego pola
     bokx = 3 
     boky = 1
@@ -72,7 +79,12 @@ def rozgrywka(stdscr, poziom):
     srodekx = 1
     srodeky = 0
 
-    while True:     # tutaj trzeba pracowac nad wyswietlaniem planszy
+    #podświetlane pole
+    pozycja = (0,0)  #(x = kolumna, y = wiersz)
+
+    wynik = 0
+
+    while not wynik:     # tutaj trzeba pracowac nad wyswietlaniem planszy 
         # ZEGAR:
         zegar.erase()
 
@@ -227,20 +239,55 @@ def rozgrywka(stdscr, poziom):
             start = time.time()
 
         try:    # zapobieganie blokowaniu sie gry
-            klawisz = stdscr.getkey()
-            if klawisz == 'q':
-                break
-            
-            #TUTAJ WSTAWIC STEROWANIE I NASLUCHIWANIE KLIKNIECIA KLAWISZY
+            key = stdscr.getkey()
+       
+            #STEROWANIE
+            if key == curses.esc:
+                return False, pozycja
+                #skończ grę/ wyjdź do menu
 
-            # (Tutaj w przyszlosci dodamy stawianie flag)
-            # if klawisz == 'f':
-            #     liczba_flag -= 1
+            elif key == ord('c'):
+                pass
+                # zapisz(plansza) #aktualnie nie istnieje
+                #wypisz "zapisano"??
+                #zapisuje planszę
+
+            #PORUSZANIE SIĘ AWSD
+            elif key == ord('a'):
+                pozycja = ((pozycja[0]-1)%plansza.szer, pozycja[1])
+                return True, pozycja
+            
+            elif key == ord('w'):
+                pozycja = ((pozycja[0]), (pozycja[1]+1)%plansza.wys)
+                return True, pozycja
+            
+            elif key == ord('s'):
+                pozycja = ((pozycja[0]), (pozycja[1]-1)%plansza.wys)
+                return True, pozycja
+            
+            elif key == ord('d'):
+                pozycja = ((pozycja[0]+1)%plansza.szer, pozycja[1])
+                return True, pozycja
+            
+            #INTERAKCJA E I Q
+            elif key == ord('q'):
+                liczba_flag = postaw_flage(pozycja, plansza,liczba_flag)
+            
+            # if key == ord('e'): #funkcja będzie zwracać 0 - kontynuacja, 1 - wygrana, 2 - przegrana
+            #     wynik = ruch(pozycja, plansza) #jeśli wygrana lub przegrana to przerwie pętlę gry
+
+            #możliwy automatyczny restart??    
+            # if key == ord('r'):
+            #     pass
+            #     #koniec i początek nowej rozgrywki, restart
 
         except:
             pass
+
             
         curses.napms(50)    # dodalam opoznienie by nie wykorzystywac 100% procesora
+
+    #poza pętlą, trzeba sprawdzić wartość wynik. Jeśli wynik = 1: wywołać wygrana(). Jeśli wynik = 2: wywołać przegrana()
         
 
 def menu_glowne(stdscr):
