@@ -243,7 +243,7 @@ def rozgrywka(stdscr, poziom):
        
             #STEROWANIE
             if key == curses.esc:
-                return False, pozycja
+                break
                 #skończ grę/ wyjdź do menu
 
             elif key == ord('c'):
