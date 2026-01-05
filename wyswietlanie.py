@@ -3,7 +3,6 @@ import curses
 from curses import wrapper
 from saper import postaw_flage, ruch, Plansza
 # from konta import zapisz #aktualnie nie istnieje
-#from curses.textpad import rectangle
 
 def rozgrywka(stdscr, poziom):
     wysokosc_ekranu, szerokosc_ekranu = stdscr.getmaxyx()   # pobieranie wymiarow ekranu, zeby wiedziec gdzie jest "prawy gorny rog"
@@ -31,9 +30,12 @@ def rozgrywka(stdscr, poziom):
     Liczba8 = curses.color_pair(11)
     curses.init_pair(12, 9, 235)
     Flaga = curses.color_pair(12)
-    curses.init_pair(13, 202, 238)
+    curses.init_pair(13, 15, 235)
     Bomba = curses.color_pair(13)
-
+    curses.init_pair(14, 1, 0)
+    Obrys = curses.color_pair(14)
+    curses.init_pair(15, 0, 9)
+    Boom = curses.color_pair(15)
 
     # ustalic z innymi czy ten sposób i wartosci beda ok, bo proszenie uzytkownika o wielkosc planszy jest trudniejsze
     if poziom == 'latwy':    # poziomy
@@ -55,17 +57,17 @@ def rozgrywka(stdscr, poziom):
     start = time.time()
 
     #tworzenie tymczasowej planszy aby spróbowac ja wyswietlic - zamiast tego pojawi sie tu potem wywolanie funkcji GENEROWANIE
-    przykladowa_plansza = curses.newwin(10, 27, wysokosc_ekranu//2 - 4, szerokosc_ekranu//2 - 13) # jest o jedną za dużo linie (10 zamiast 9), bo z jakiegoś powodu program jej potrzebuje???
+    przykladowa_plansza = curses.newwin(18, 36, wysokosc_ekranu//2 - 9, szerokosc_ekranu//2 - 18)
     przykladowa_plansza.refresh()
-    tablica = [[10, 10, 10, 10, 10, 10, 10, 10, 10], 
-               [10, 0, 0, 0, 0, 0, 0, 0, 10], 
-               [10, 10, 10, 10, 10, 10, 10, 10, 10], 
-               [10, 10, 1, 10, 5, 10, 9, 10, 10], 
-               [10, 10, 2, 10, 6, 10, 9, 10, 10], 
-               [10, 10, 3, 10, 7, 10, -1, 10, 10], 
-               [10, 10, 4, 10, 8, 10, -1, 10, 10], 
-               [10, 10, 10, 10, 10, 10, 10, 10, 10], 
-               [10, 10, 10, 10, 10, 10, 10, 10, 10]]
+    tablica = [[0, 0, 0, 2, 10, 10, 1, 0, 0], 
+               [0, 0, -2, 2, 10, 1, 3, 0, 0], 
+               [1, 2, 1, 1, 10, 1, 0, 0, 0], 
+               [10, 10, 10, 10, 1, 3, 0, 0, 0], 
+               [10, 10, 10, 10, 1, 9, 0, 0, 0], 
+               [1, 1, 10, 10, 1, 2, 2, 1, 0], 
+               [-1, 1, 10, 10, 10, 10, 10, 10, 0], 
+               [0, 1, 10, 10, 10, 10, 10, 10, 00], 
+               [0, 0, 0, 0, 0, 0, 0, 0, 0]]
     
     #zainicjowana plansza. na razie nic nie robi.
     szer, wys, bomby = 9,9,10
@@ -109,19 +111,20 @@ def rozgrywka(stdscr, poziom):
         # AKTUALNY STAN PLANSZY
         przykladowa_plansza.erase()
 
-        # dodac rysowanie siatki obrysow za pomoca funkcji rectangle
-
         for rzad in range(len(tablica)):
 
             for kolumna in range(len(tablica[rzad])):    #Wypelniam prostokaty bokx na boky kolorami i symbolami przedstawiajacymi dane pole
 
+                pozycjax = rzad*(bokx+1)
+                pozycjay = kolumna*(boky+1)
+                
                 if tablica[rzad][kolumna] == 0: #Odkryte pole 
 
                     for i in range(boky):  
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePole) 
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole) 
 
                 elif tablica[rzad][kolumna] == 1: #Pole z jedna sasiadujaca bomba
 
@@ -129,9 +132,9 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '1', Liczba1)
+                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '1', Liczba1)
 
                 elif tablica[rzad][kolumna] == 2:
 
@@ -139,9 +142,9 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '2', Liczba2)
+                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '2', Liczba2)
 
                 elif tablica[rzad][kolumna] == 3:
 
@@ -149,9 +152,9 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '3', Liczba3)
+                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '3', Liczba3)
 
                 elif tablica[rzad][kolumna] == 4:
 
@@ -159,9 +162,9 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '4', Liczba4)
+                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '4', Liczba4)
 
                 elif tablica[rzad][kolumna] == 5:
 
@@ -169,9 +172,9 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '5', Liczba5)
+                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '5', Liczba5)
 
                 elif tablica[rzad][kolumna] == 6:
                     
@@ -179,9 +182,9 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '6', Liczba6)
+                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '6', Liczba6)
 
                 elif tablica[rzad][kolumna] == 7:
                     
@@ -189,9 +192,9 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '7', Liczba7)
+                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '7', Liczba7)
 
                 elif tablica[rzad][kolumna] == 8:
                     
@@ -199,9 +202,9 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
                     
-                    przykladowa_plansza.addstr(kolumna*boky+srodeky, rzad*bokx+srodekx, '8', Liczba8)
+                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '8', Liczba8)
 
                 elif tablica[rzad][kolumna] == 9: #Oflagowane pole
 
@@ -209,9 +212,9 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePole) 
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole) 
                     
-                    przykladowa_plansza.addch(kolumna*boky+srodeky, rzad*bokx+srodekx, '⚑', Flaga)
+                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '⚑', Flaga)
 
                 elif tablica[rzad][kolumna] == 10: #Zakryte pole
                     
@@ -219,7 +222,7 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
 
                 elif tablica[rzad][kolumna] == -1: #Bomba
                     
@@ -227,9 +230,19 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(kolumna*boky+i, rzad*bokx+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
                     
-                    przykladowa_plansza.addch(kolumna*boky+srodeky, rzad*bokx+srodekx, '✸', Bomba)
+                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '◉', Bomba)
+
+                elif tablica[rzad][kolumna] == -2: #Użytkownik trafił na bombe
+                    
+                    for i in range(boky):
+
+                        for j in range(bokx):
+
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', Boom)
+                    
+                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '◉', Boom)
         
         przykladowa_plansza.refresh()
 
