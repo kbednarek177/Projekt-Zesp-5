@@ -18,12 +18,16 @@ def ruch(pozycja, plansza):
         #funkcja który sprawdza, czy można odkryć element, odkrywa i sprawdza czy partia jest wygrana/przegrana
         #funkcja zmienia plansza.wyswietlana
         
-def postaw_flage(pozycja, plansza):
+def postaw_flage(pozycja, plansza, ile_flag):
     x, y = pozycja #y - wiersz, x- kolumna
-    if plansza.wyswietlana[y][x] == 9:
-        plansza.wyswietlana[y][x] = 10
-    elif plansza.wyswietlana[y][x] == 10:
-        plansza.wyswietlana[y][x] = 9
+    if plansza.bomby - ile_flag < plansza.bomby:
+        if plansza.wyswietlana[y][x] == 9: #flagę postawiono
+            plansza.wyswietlana[y][x] = 10
+            ile_flag -= 1
+        elif plansza.wyswietlana[y][x] == 10: #flagę usunięto
+            plansza.wyswietlana[y][x] = 9
+            ile_flag += 1
+    return ile_flag
         #funkcja która sprawdza, czy miejsce jedt zakryte, jeśli tak to daje/usuwa flagę
         #zmienia plansza.wyswietlana
 
