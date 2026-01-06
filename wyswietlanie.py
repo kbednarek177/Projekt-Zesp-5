@@ -36,8 +36,10 @@ def rozgrywka(stdscr, poziom):
     Obrys = curses.color_pair(14)
     curses.init_pair(15, 0, 9)
     Boom = curses.color_pair(15)
+    curses.init_pair(16, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    Miganie = curses.color_pair(16)
 
-    # ustalic z innymi czy ten sposób i wartosci beda ok, bo proszenie uzytkownika o wielkosc planszy jest trudniejsze
+    # ustalic z innymi czy ten sposob i wartosci beda ok, bo proszenie uzytkownika o wielkosc planszy jest trudniejsze
     if poziom == 'latwy':    # poziomy
         liczba_flag = 10
     elif poziom == 'sredni':
@@ -55,10 +57,15 @@ def rozgrywka(stdscr, poziom):
  
     czas = 0
     start = time.time()
+    
+    # boki pojedynczego pola
+    bokx = 3 
+    boky = 1
+    # wspolrzedne srodka pojedynczego pola numerujac od zera
+    srodekx = 1
+    srodeky = 0
 
-    #tworzenie tymczasowej planszy aby spróbowac ja wyswietlic - zamiast tego pojawi sie tu potem wywolanie funkcji GENEROWANIE
-    przykladowa_plansza = curses.newwin(18, 36, wysokosc_ekranu//2 - 9, szerokosc_ekranu//2 - 18)
-    przykladowa_plansza.refresh()
+    #tworzenie tymczasowej planszy aby sprobowac ja wyswietlic - zamiast tego pojawi sie tu potem wywolanie funkcji GENEROWANIE
     tablica = [[0, 0, 0, 2, 10, 10, 1, 0, 0], 
                [0, 0, -2, 2, 10, 1, 3, 0, 0], 
                [1, 2, 1, 1, 10, 1, 0, 0, 0], 
@@ -69,21 +76,22 @@ def rozgrywka(stdscr, poziom):
                [0, 1, 10, 10, 10, 10, 10, 10, 00], 
                [0, 0, 0, 0, 0, 0, 0, 0, 0]]
     
-    #zainicjowana plansza. na razie nic nie robi.
+    # Liczba wierszy * wysokosc pola (bok+ramka)
+    wys_planszy = len(tablica) * (boky + 1) 
+    # Liczba kolumn * szerokosc pola (bok+ramka)
+    szer_planszy = len(tablica[0]) * (bokx + 1)
+
+    start_y = (wysokosc_ekranu // 2) - (wys_planszy // 2)
+    start_x = (szerokosc_ekranu // 2) - (szer_planszy // 2)
+
+    przykladowa_plansza = curses.newwin(wys_planszy, szer_planszy, start_y, start_x)
+    
     szer, wys, bomby = 9,9,10
     plansza = Plansza(szer, wys, bomby)
     # do wyswietlenia: plansza.wyswietlana. plansza.wyzwietlana[y = wiersz][x = kolumna]
     
-    #boki pojedynczego pola
-    bokx = 3 
-    boky = 1
-    #wspolrzedne srodka pojedynczego pola numerujac od zera
-    srodekx = 1
-    srodeky = 0
-
-    #podświetlane pole
+    #podswietlane pole
     pozycja = (0,0)  #(x = kolumna, y = wiersz)
-
     wynik = 0
 
     while not wynik:     # tutaj trzeba pracowac nad wyswietlaniem planszy 
@@ -115,8 +123,10 @@ def rozgrywka(stdscr, poziom):
 
             for kolumna in range(len(tablica[rzad])):    #Wypelniam prostokaty bokx na boky kolorami i symbolami przedstawiajacymi dane pole
 
-                pozycjax = rzad*(bokx+1)
-                pozycjay = kolumna*(boky+1)
+                # pozycjax = rzad*(bokx+1)
+                # pozycjay = kolumna*(boky+1)
+                pozycjax = kolumna * (bokx + 1)
+                pozycjay = rzad * (boky + 1)
                 
                 if tablica[rzad][kolumna] == 0: #Odkryte pole 
 
@@ -234,7 +244,7 @@ def rozgrywka(stdscr, poziom):
                     
                     przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '◉', Bomba)
 
-                elif tablica[rzad][kolumna] == -2: #Użytkownik trafił na bombe
+                elif tablica[rzad][kolumna] == -2: #Uzytkownik trafil na bombe
                     
                     for i in range(boky):
 
@@ -244,6 +254,29 @@ def rozgrywka(stdscr, poziom):
                     
                     przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '◉', Boom)
         
+        # MIGAJACE POLA - GRY UZYTKOWNIK JEST NA DANYM POLU TO ONO  'MIGA'
+
+        if int(time.time() * 2) % 2:
+            px_gracza = pozycja[0] * (bokx + 1)
+            py_gracza = pozycja[1] * (boky + 1)
+            
+            wartosc_pola = tablica[pozycja[1]][pozycja[0]]
+            znak_do_wyswietlenia = ' '
+            
+            if wartosc_pola == 9:
+                znak_do_wyswietlenia = '⚑'
+            elif wartosc_pola == -1 or wartosc_pola == -2:
+                znak_do_wyswietlenia = '◉'
+            elif 1 <= wartosc_pola <= 8:
+                znak_do_wyswietlenia = str(wartosc_pola)
+            
+            for i in range(boky):
+                for j in range(bokx):
+                    przykladowa_plansza.addstr(py_gracza + i, px_gracza + j, ' ', Miganie)
+            
+            if znak_do_wyswietlenia != ' ':
+                przykladowa_plansza.addstr(py_gracza + srodeky, px_gracza + srodekx, znak_do_wyswietlenia, Miganie)
+
         przykladowa_plansza.refresh()
 
         # AKTUALIZOWANIE WSZYSTKIEGO I ODCZYTYWANIE POSUNIEC UZYTOWNIKA
@@ -252,51 +285,51 @@ def rozgrywka(stdscr, poziom):
             start = time.time()
 
         try:    # zapobieganie blokowaniu sie gry
-            key = stdscr.getkey()
-       
-            #STEROWANIE
-            if key == curses.esc:
-                break
-                #skończ grę/ wyjdź do menu
-
-            elif key == ord('c'):
-                pass
-                # zapisz(plansza) #aktualnie nie istnieje
-                #wypisz "zapisano"??
-                #zapisuje planszę
-
-            #PORUSZANIE SIĘ AWSD
-            elif key == ord('a'):
-                pozycja = ((pozycja[0]-1)%plansza.szer, pozycja[1])
-            
-            elif key == ord('w'):
-                pozycja = ((pozycja[0]), (pozycja[1]+1)%plansza.wys)
-            
-            elif key == ord('s'):
-                pozycja = ((pozycja[0]), (pozycja[1]-1)%plansza.wys) 
-            
-            elif key == ord('d'):
-                pozycja = ((pozycja[0]+1)%plansza.szer, pozycja[1])
-            
-            #INTERAKCJA E I Q
-            elif key == ord('q'):
-                liczba_flag = postaw_flage(pozycja, plansza,liczba_flag)
-            
-            # if key == ord('e'): #funkcja będzie zwracać 0 - kontynuacja, 1 - wygrana, 2 - przegrana
-            #     wynik = ruch(pozycja, plansza) #jeśli wygrana lub przegrana to przerwie pętlę gry
-
-            #możliwy automatyczny restart??    
-            # if key == ord('r'):
-            #     pass
-            #     #koniec i początek nowej rozgrywki, restart
-
+            klawisz = stdscr.getkey()
         except:
-            pass
+            klawisz = None
+       
+        #STEROWANIE
+        if klawisz == 'q':
+            break
+            #skoncz gre / wyjdz do menu
 
+        elif klawisz == 'z':
+            pass
+            # zapisz(plansza) # aktualnie nie istnieje
+            # wypisz "zapisano"??
+            # zapisuje plansze
+
+        # PORUSZANIE SIE AWSD
+        elif klawisz == 'KEY_LEFT':
+            pozycja = ((pozycja[0]-1)%plansza.szer, pozycja[1])
+            
+        elif klawisz == 'KEY_DOWN':
+            pozycja = ((pozycja[0]), (pozycja[1]+1)%plansza.wys)
+            
+        elif klawisz == 'KEY_UP':
+            pozycja = ((pozycja[0]), (pozycja[1]-1)%plansza.wys) 
+            
+        elif klawisz == 'KEY_RIGHT':
+            pozycja = ((pozycja[0]+1)%plansza.szer, pozycja[1])
+            
+        # STAWIANIE FLAG
+        elif klawisz == 'f':
+            liczba_flag = postaw_flage(pozycja, plansza,liczba_flag)
+            
+        # (tu Agatka) nie rozumiem co robi to 'e' :(
+
+        # if key == ord('e'): # funkcja bedzie zwracac 0 - kontynuacja, 1 - wygrana, 2 - przegrana
+        #     wynik = ruch(pozycja, plansza) # jesli wygrana lub przegrana to przerwie petle gry
+
+        # mozliwy automatyczny restart??    
+        # if key == ord('r'):
+        #     pass
+        #     # koniec i poczatek nowej rozgrywki, restart
             
         curses.napms(50)    # dodalam opoznienie by nie wykorzystywac 100% procesora
 
-    #poza pętlą, trzeba sprawdzić wartość wynik. Jeśli wynik = 1: wywołać wygrana(). Jeśli wynik = 2: wywołać przegrana()
+    # poza petla, trzeba sprawdzic wartosc wynik. Jesli wynik = 1: wywolac wygrana(). Jesli wynik = 2: wywolac przegrana()
         
 
 def menu_glowne(stdscr):
