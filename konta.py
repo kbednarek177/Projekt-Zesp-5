@@ -101,7 +101,7 @@ def str_ll_przetlumacz(napis):
     
     for i in range(1,len(napis)):
         temp.append(int(napis[i]))
-        if(i % rozmiar == 0):
+        if(i % int(rozmiar) == 0):
             wynik.append(temp)
             temp = []
             
