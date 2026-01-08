@@ -6,12 +6,13 @@ from saper import postaw_flage, ruch, Plansza
 
 def rozgrywka(stdscr, poziom):
     wysokosc_ekranu, szerokosc_ekranu = stdscr.getmaxyx()   # pobieranie wymiarow ekranu, zeby wiedziec gdzie jest "prawy gorny rog"
+    klawisze_ruchu = {"w", "a", "s", "d", "KEY_UP", "KEY_DOWN", "KEY_LEFT", "KEY_RIGHT"}
 
     # Tworzenie kolorow potrzebnych do wyswietlania planszy
     curses.init_pair(2, 238, 235)
-    OdkrytePole = curses.color_pair(2)
+    ZakrytePole = curses.color_pair(2)
     curses.init_pair(3, 235, 238)
-    OdkrytePoleReverse = curses.color_pair(3)
+    OdkrytePole = curses.color_pair(3)
     curses.init_pair(4, 4, 238)
     Liczba1 = curses.color_pair(4)
     curses.init_pair(5, 2, 238)
@@ -32,20 +33,21 @@ def rozgrywka(stdscr, poziom):
     Flaga = curses.color_pair(12)
     curses.init_pair(13, 15, 235)
     Bomba = curses.color_pair(13)
-    curses.init_pair(14, 1, 0)
-    Obrys = curses.color_pair(14)
     curses.init_pair(15, 0, 9)
     Boom = curses.color_pair(15)
     curses.init_pair(16, curses.COLOR_BLACK, curses.COLOR_WHITE)
     Miganie = curses.color_pair(16)
 
-    # ustalic z innymi czy ten sposob i wartosci beda ok, bo proszenie uzytkownika o wielkosc planszy jest trudniejsze
     if poziom == 'latwy':    # poziomy
         liczba_flag = 10
     elif poziom == 'sredni':
         liczba_flag = 40
     else:
         liczba_flag = 99
+
+    # instrukcja na dole ekranu
+    instrukcja = curses.newwin(1, 100, wysokosc_ekranu-1, max(0,(szerokosc_ekranu // 2) - 24)) # jesli ekran jest za maly to wyswietlaj od poczatku (0), 24 to polowa dlugosci instrukcji
+    instrukcja.refresh()
 
     zegar = curses.newwin(1, 20, 0, 0)    # zegar odliczajacy w sekundach
     zegar.refresh()
@@ -66,15 +68,15 @@ def rozgrywka(stdscr, poziom):
     srodeky = 0
 
     #tworzenie tymczasowej planszy aby sprobowac ja wyswietlic - zamiast tego pojawi sie tu potem wywolanie funkcji GENEROWANIE
-    tablica = [[0, 0, 0, 2, 10, 10, 1, 0, 0], 
-               [0, 0, -2, 2, 10, 1, 3, 0, 0], 
-               [1, 2, 1, 1, 10, 1, 0, 0, 0], 
-               [10, 10, 10, 10, 1, 3, 0, 0, 0], 
-               [10, 10, 10, 10, 1, 9, 0, 0, 0], 
-               [1, 1, 10, 10, 1, 2, 2, 1, 0], 
-               [-1, 1, 10, 10, 10, 10, 10, 10, 0], 
-               [0, 1, 10, 10, 10, 10, 10, 10, 00], 
-               [0, 0, 0, 0, 0, 0, 0, 0, 0]]
+    tablica = [[9, 9, 9, 2, 0, 0, 1, 9, 9], 
+               [9, 9, -2, 2, 0, 1, 3, 9, 9], 
+               [1, 2, 1, 1, 0, 1, 9, 9, 9], 
+               [0, 0, 0, 0, 1, 3, 9, 9, 9], 
+               [0, 0, 0, 0, 1, 10, 9, 9, 9], 
+               [1, 1, 0, 0, 1, 2, 2, 1, 9], 
+               [-1, 1, 0, 0, 0, 0, 0, 0, 9], 
+               [9, 1, 0, 0, 0, 0, 0, 0, 9], 
+               [9, 9, 9, 9, 9, 9, 9, 9, 9]]
     
     # Liczba wierszy * wysokosc pola (bok+ramka)
     wys_planszy = len(tablica) * (boky + 1) 
@@ -93,6 +95,7 @@ def rozgrywka(stdscr, poziom):
     #podswietlane pole
     pozycja = (0,0)  #(x = kolumna, y = wiersz)
     wynik = 0
+
 
     while not wynik:     # tutaj trzeba pracowac nad wyswietlaniem planszy 
         # ZEGAR:
@@ -116,6 +119,15 @@ def rozgrywka(stdscr, poziom):
 
         okno_flagi.refresh()
 
+        # INSTRUKCJA
+
+        instrukcja.erase()
+        try:
+            instrukcja.addstr(0, 0, "wasd/strzalki - ←↑→↓, f - ⚑, e - ⌕, , z - ⭳, q - ✕", curses.COLOR_WHITE)
+        except:
+            pass
+        instrukcja.refresh()
+
         # AKTUALNY STAN PLANSZY
         przykladowa_plansza.erase()
 
@@ -130,7 +142,7 @@ def rozgrywka(stdscr, poziom):
                 
                 if tablica[rzad][kolumna] == 0: #Odkryte pole 
 
-                    for i in range(boky):  
+                    for i in range(boky):
 
                         for j in range(bokx):
 
@@ -142,7 +154,7 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
                     
                     przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '1', Liczba1)
 
@@ -152,7 +164,7 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
                     
                     przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '2', Liczba2)
 
@@ -162,7 +174,7 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
                     
                     przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '3', Liczba3)
 
@@ -172,7 +184,7 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
                     
                     przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '4', Liczba4)
 
@@ -182,7 +194,7 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
                     
                     przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '5', Liczba5)
 
@@ -192,7 +204,7 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
                     
                     przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '6', Liczba6)
 
@@ -202,7 +214,7 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
                     
                     przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '7', Liczba7)
 
@@ -212,27 +224,27 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
                     
                     przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '8', Liczba8)
 
-                elif tablica[rzad][kolumna] == 9: #Oflagowane pole
+                elif tablica[rzad][kolumna] == 9: #Zakryte pole
+
+                    for i in range(boky):  
+
+                        for j in range(bokx):
+
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', ZakrytePole) 
+
+                elif tablica[rzad][kolumna] == 10: #Oflagowane pole
 
                     for i in range(boky):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole) 
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', ZakrytePole) 
                     
                     przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '⚑', Flaga)
-
-                elif tablica[rzad][kolumna] == 10: #Zakryte pole
-                    
-                    for i in range(boky):
-
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePoleReverse)
 
                 elif tablica[rzad][kolumna] == -1: #Bomba
                     
@@ -240,7 +252,7 @@ def rozgrywka(stdscr, poziom):
 
                         for j in range(bokx):
 
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
+                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', ZakrytePole)
                     
                     przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '◉', Bomba)
 
@@ -253,17 +265,22 @@ def rozgrywka(stdscr, poziom):
                             przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', Boom)
                     
                     przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '◉', Boom)
-        
-        # MIGAJACE POLA - GRY UZYTKOWNIK JEST NA DANYM POLU TO ONO  'MIGA'
 
-        if int(time.time() * 2) % 2:
+        try:    # zapobieganie blokowaniu sie gry
+            klawisz = stdscr.getkey() #nasluchiwanie ruchow uzytkownika
+        except:
+            klawisz = None
+        
+        # MIGAJACE POLA - GRY UZYTKOWNIK JEST NA DANYM POLU TO ONO 'MIGA'
+
+        if int(time.time() * 2) % 2 or klawisz in klawisze_ruchu:
             px_gracza = pozycja[0] * (bokx + 1)
             py_gracza = pozycja[1] * (boky + 1)
             
             wartosc_pola = tablica[pozycja[1]][pozycja[0]]
             znak_do_wyswietlenia = ' '
             
-            if wartosc_pola == 9:
+            if wartosc_pola == 10:
                 znak_do_wyswietlenia = '⚑'
             elif wartosc_pola == -1 or wartosc_pola == -2:
                 znak_do_wyswietlenia = '◉'
@@ -283,11 +300,6 @@ def rozgrywka(stdscr, poziom):
         if time.time() - start >= 1:
             czas = czas + 1
             start = time.time()
-
-        try:    # zapobieganie blokowaniu sie gry
-            klawisz = stdscr.getkey()
-        except:
-            klawisz = None
        
         #STEROWANIE
         if klawisz == 'q':
@@ -301,16 +313,16 @@ def rozgrywka(stdscr, poziom):
             # zapisuje plansze
 
         # PORUSZANIE SIE AWSD
-        elif klawisz == 'KEY_LEFT':
+        elif klawisz == 'KEY_LEFT' or klawisz == 'a':
             pozycja = ((pozycja[0]-1)%plansza.szer, pozycja[1])
             
-        elif klawisz == 'KEY_DOWN':
+        elif klawisz == 'KEY_DOWN' or klawisz == 's':
             pozycja = ((pozycja[0]), (pozycja[1]+1)%plansza.wys)
             
-        elif klawisz == 'KEY_UP':
+        elif klawisz == 'KEY_UP' or klawisz == 'w':
             pozycja = ((pozycja[0]), (pozycja[1]-1)%plansza.wys) 
             
-        elif klawisz == 'KEY_RIGHT':
+        elif klawisz == 'KEY_RIGHT' or klawisz == 'd':
             pozycja = ((pozycja[0]+1)%plansza.szer, pozycja[1])
             
         # STAWIANIE FLAG
@@ -374,10 +386,10 @@ def menu_glowne(stdscr):
         except:
             klawisz = None
 
-        if klawisz == 'KEY_UP':
+        if klawisz == 'KEY_UP' or klawisz == 'w':
             obecny_rzad = (obecny_rzad - 1) % len(ekran[iterator])
             
-        elif klawisz == 'KEY_DOWN':
+        elif klawisz == 'KEY_DOWN' or klawisz == 's':
             obecny_rzad = (obecny_rzad + 1) % len(ekran[iterator])
 
         elif klawisz == 'q': # cofnij - dokonczyc, gdy zrobimy zasady gry oraz logowanie
