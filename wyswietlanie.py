@@ -6,7 +6,7 @@ from saper import postaw_flage, ruch, Plansza
 
 def rozgrywka(stdscr, poziom):
     wysokosc_ekranu, szerokosc_ekranu = stdscr.getmaxyx()   # pobieranie wymiarow ekranu, zeby wiedziec gdzie jest "prawy gorny rog"
-    klawisze_ruchu = {"w", "a", "s", "d", "KEY_UP", "KEY_DOWN", "KEY_LEFT", "KEY_RIGHT"}
+    klawisze_ruchu = {"w", "a", "s", "d", "W", "A", "S", "D", "KEY_UP", "KEY_DOWN", "KEY_LEFT", "KEY_RIGHT"}
 
     # Tworzenie kolorow potrzebnych do wyswietlania planszy
     curses.init_pair(2, 238, 235)
@@ -46,7 +46,7 @@ def rozgrywka(stdscr, poziom):
         liczba_flag = 99
 
     # instrukcja na dole ekranu
-    instrukcja = curses.newwin(1, 100, wysokosc_ekranu-1, max(0,(szerokosc_ekranu // 2) - 24)) # jesli ekran jest za maly to wyswietlaj od poczatku (0), 24 to polowa dlugosci instrukcji
+    instrukcja = curses.newwin(2, szerokosc_ekranu, wysokosc_ekranu - 2, 0)
     instrukcja.refresh()
 
     zegar = curses.newwin(1, 20, 0, 0)    # zegar odliczajacy w sekundach
@@ -119,158 +119,79 @@ def rozgrywka(stdscr, poziom):
 
         okno_flagi.refresh()
 
-        # INSTRUKCJA
 
+        # INSTRUKCJA
         instrukcja.erase()
         try:
-            instrukcja.addstr(0, 0, "wasd/strzalki - ←↑→↓, f - ⚑, e - ⌕, , z - ⭳, q - ✕", curses.COLOR_WHITE)
+            tekst1 = "[A][W][S][D]/STRZALKI - poruszanie sie"
+            tekst2 = "[F] - flaga, [E] - odkryj pole, [Z] - zapisz, [Q] - wyjdz"
+            
+            # srodek wzgledem calego ekranu
+            x1 = max(0, (szerokosc_ekranu // 2) - (len(tekst1) // 2))
+            x2 = max(0, (szerokosc_ekranu // 2) - (len(tekst2) // 2))
+
+            instrukcja.addstr(0, x1, tekst1, curses.COLOR_WHITE)
+            instrukcja.addstr(1, x2, tekst2, curses.COLOR_WHITE)
         except:
             pass
         instrukcja.refresh()
 
+
         # AKTUALNY STAN PLANSZY
         przykladowa_plansza.erase()
 
+        kolory_liczb = {
+            1: Liczba1, 2: Liczba2, 3: Liczba3, 4: Liczba4,
+            5: Liczba5, 6: Liczba6, 7: Liczba7, 8: Liczba8
+        }
+
         for rzad in range(len(tablica)):
+            for kolumna in range(len(tablica[rzad])):
 
-            for kolumna in range(len(tablica[rzad])):    #Wypelniam prostokaty bokx na boky kolorami i symbolami przedstawiajacymi dane pole
-
-                # pozycjax = rzad*(bokx+1)
-                # pozycjay = kolumna*(boky+1)
                 pozycjax = kolumna * (bokx + 1)
                 pozycjay = rzad * (boky + 1)
                 
-                if tablica[rzad][kolumna] == 0: #Odkryte pole 
+                wartosc = tablica[rzad][kolumna]
+                
+                bg_style = OdkrytePole      
+                znak = ' '                  
+                znak_style = OdkrytePole    
 
-                    for i in range(boky):
+                if 1 <= wartosc <= 8:       
+                    znak = str(wartosc)
+                    znak_style = kolory_liczb[wartosc]
+                
+                elif wartosc == 9:          
+                    bg_style = ZakrytePole
+                
+                elif wartosc == 10:         
+                    bg_style = ZakrytePole
+                    znak = '⚑'
+                    znak_style = Flaga
+                
+                elif wartosc == -1:         
+                    bg_style = ZakrytePole
+                    znak = '◉'
+                    znak_style = Bomba
+                
+                elif wartosc == -2:         
+                    bg_style = Boom
+                    znak = '◉'
+                    znak_style = Boom
 
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole) 
-
-                elif tablica[rzad][kolumna] == 1: #Pole z jedna sasiadujaca bomba
-
-                    for i in range(boky):
-
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
-                    
-                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '1', Liczba1)
-
-                elif tablica[rzad][kolumna] == 2:
-
-                    for i in range(boky):
-
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
-                    
-                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '2', Liczba2)
-
-                elif tablica[rzad][kolumna] == 3:
-
-                    for i in range(boky):
-
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
-                    
-                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '3', Liczba3)
-
-                elif tablica[rzad][kolumna] == 4:
-
-                    for i in range(boky):
-
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
-                    
-                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '4', Liczba4)
-
-                elif tablica[rzad][kolumna] == 5:
-
-                    for i in range(boky):
-
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
-                    
-                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '5', Liczba5)
-
-                elif tablica[rzad][kolumna] == 6:
-                    
-                    for i in range(boky):
-
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
-                    
-                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '6', Liczba6)
-
-                elif tablica[rzad][kolumna] == 7:
-                    
-                    for i in range(boky):
-
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
-                    
-                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '7', Liczba7)
-
-                elif tablica[rzad][kolumna] == 8:
-                    
-                    for i in range(boky):
-
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', OdkrytePole)
-                    
-                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '8', Liczba8)
-
-                elif tablica[rzad][kolumna] == 9: #Zakryte pole
-
-                    for i in range(boky):  
-
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', ZakrytePole) 
-
-                elif tablica[rzad][kolumna] == 10: #Oflagowane pole
-
-                    for i in range(boky):
-
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', ZakrytePole) 
-                    
-                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '⚑', Flaga)
-
-                elif tablica[rzad][kolumna] == -1: #Bomba
-                    
-                    for i in range(boky):
-
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', ZakrytePole)
-                    
-                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '◉', Bomba)
-
-                elif tablica[rzad][kolumna] == -2: #Uzytkownik trafil na bombe
-                    
-                    for i in range(boky):
-
-                        for j in range(bokx):
-
-                            przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', Boom)
-                    
-                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, '◉', Boom)
+                for i in range(boky):
+                    for j in range(bokx):
+                        przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', bg_style)
+                
+                if znak != ' ':
+                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, znak, znak_style)
 
         try:    # zapobieganie blokowaniu sie gry
-            klawisz = stdscr.getkey() #nasluchiwanie ruchow uzytkownika
+            klawisz = stdscr.getkey() # nasluchiwanie ruchow uzytkownika
         except:
             klawisz = None
         
+
         # MIGAJACE POLA - GRY UZYTKOWNIK JEST NA DANYM POLU TO ONO 'MIGA'
 
         if int(time.time() * 2) % 2 or klawisz in klawisze_ruchu:
@@ -296,53 +217,92 @@ def rozgrywka(stdscr, poziom):
 
         przykladowa_plansza.refresh()
 
+
         # AKTUALIZOWANIE WSZYSTKIEGO I ODCZYTYWANIE POSUNIEC UZYTOWNIKA
         if time.time() - start >= 1:
             czas = czas + 1
             start = time.time()
        
+
         #STEROWANIE
-        if klawisz == 'q':
+        if klawisz == 'q' or klawisz == 'Q':
             break
             #skoncz gre / wyjdz do menu
 
-        elif klawisz == 'z':
+        elif klawisz == 'z' or klawisz == 'Z':
             pass
             # zapisz(plansza) # aktualnie nie istnieje
             # wypisz "zapisano"??
             # zapisuje plansze
 
-        # PORUSZANIE SIE AWSD
-        elif klawisz == 'KEY_LEFT' or klawisz == 'a':
+            # if czy_zalogowano == True:
+            #       przekaz_zuzi_plansze()
+            #       wyswietl_zapisano() - w boxie, gdzies na dole ...
+
+
+        # PORUSZANIE SIE
+        elif klawisz == 'KEY_LEFT' or klawisz == 'a' or klawisz == 'A':
             pozycja = ((pozycja[0]-1)%plansza.szer, pozycja[1])
             
-        elif klawisz == 'KEY_DOWN' or klawisz == 's':
+        elif klawisz == 'KEY_DOWN' or klawisz == 's' or klawisz == 'S':
             pozycja = ((pozycja[0]), (pozycja[1]+1)%plansza.wys)
             
-        elif klawisz == 'KEY_UP' or klawisz == 'w':
+        elif klawisz == 'KEY_UP' or klawisz == 'w' or klawisz == 'W':
             pozycja = ((pozycja[0]), (pozycja[1]-1)%plansza.wys) 
             
-        elif klawisz == 'KEY_RIGHT' or klawisz == 'd':
+        elif klawisz == 'KEY_RIGHT' or klawisz == 'd' or klawisz == 'D':
             pozycja = ((pozycja[0]+1)%plansza.szer, pozycja[1])
             
+            
         # STAWIANIE FLAG
-        elif klawisz == 'f':
+        elif klawisz == 'f' or klawisz == 'F':
             liczba_flag = postaw_flage(pozycja, plansza,liczba_flag)
             
-        # (tu Agatka) nie rozumiem co robi to 'e' :(
-
-        # if key == ord('e'): # funkcja bedzie zwracac 0 - kontynuacja, 1 - wygrana, 2 - przegrana
-        #     wynik = ruch(pozycja, plansza) # jesli wygrana lub przegrana to przerwie petle gry
+        # elif klawisz == 'e' or klawisz == 'E': # funkcja bedzie zwracac 0 - kontynuacja, 1 - wygrana, 2 - przegrana
+        #     wynik = ruch(pozycja, plansza)     # jesli wygrana lub przegrana to przerwie petle gry
 
         # mozliwy automatyczny restart??    
-        # if key == ord('r'):
+        # elif klawisz == 'r' or klawisz == 'R':
         #     pass
         #     # koniec i poczatek nowej rozgrywki, restart
             
         curses.napms(50)    # dodalam opoznienie by nie wykorzystywac 100% procesora
 
     # poza petla, trzeba sprawdzic wartosc wynik. Jesli wynik = 1: wywolac wygrana(). Jesli wynik = 2: wywolac przegrana()
-        
+
+
+# FUNKCJE TYMCZASOWE - tylko do testowania ;))
+def okno_informacyjne(stdscr, tytul, wiadomosc): # proste okno, czeka na input
+    h, w = stdscr.getmaxyx()
+    okno = curses.newwin(5, 60, h//2 - 2, w//2 - 30)
+    okno.box()
+    
+    okno.addstr(1, 2, tytul, curses.A_BOLD)
+    okno.addstr(2, 2, wiadomosc)
+    okno.addstr(3, 2, "Nacisnij dowolny klawisz aby wyjsc :3", curses.A_DIM)
+    okno.refresh()
+    
+    stdscr.nodelay(False) 
+    stdscr.getch()        
+    stdscr.nodelay(True)
+
+
+def logowanie_interfejs(stdscr):
+    # Tu kiedys bedzie wpisywanie loginu i hasla ...
+    okno_informacyjne(stdscr, "LOGOWANIE", "Udalo sie zalogowac!")
+    return True
+
+
+def tworzenie_konta_interfejs(stdscr):
+    okno_informacyjne(stdscr, "TWORZENIE KONTA", "Konto utworzone!")
+    return True
+
+
+def usuwanie_konta_interfejs(stdscr):
+    # Tu powinno byc pytanie "Czy na pewno?"
+    okno_informacyjne(stdscr, "USUWANIE KONTA", "Konto zostalo usuniete")
+    return True
+
 
 def menu_glowne(stdscr):
     curses.curs_set(0)  # niech kursor sie nie wyswietla
@@ -354,18 +314,26 @@ def menu_glowne(stdscr):
 
     #stdscr.timeout(50) -> mozliwe ze to by bylo lepsze zamiast nodelay + napms ???
     
-    menu = ['Nowa Gra', 'Wczytaj Gre', 'Ranking', 'Zasady Gry', 'Wyjscie']
+    menu_gosc = ['Nowa Gra', 'Zasady Gry', 'Zaloguj', 'Utworz Konto', 'Wyjscie']
+    menu_user = ['Nowa Gra', 'Wczytaj Gre', 'Ranking', 'Zasady Gry', 'Wyloguj', 'Usun Konto', 'Wyjscie']
     poziomy = ['Latwy  ★☆☆☆☆ ', 'Sredni ★★★☆☆ ', 'Trudny ★★★★★ ']
-    tytuly = ["--- SAPER ---", "--- POZIOMY ---"]
-    ekran = [menu, poziomy]
+    
+    czy_zalogowano = False
     iterator = 0
     obecny_rzad = 0
 
     while True:
         stdscr.erase()
-        
         wysokosc, szerokosc = stdscr.getmaxyx() # pobiera informacje o wysokosci i szerokosci okna terminala
         
+        if czy_zalogowano:
+            aktualne_menu = menu_user
+        else:
+            aktualne_menu= menu_gosc
+
+        ekran = [aktualne_menu, poziomy]
+        tytuly = ["--- SAPER ---", "--- POZIOMY ---"]
+
         stdscr.addstr(wysokosc // 2 - len(ekran[iterator]) // 2 - 2, szerokosc // 2 - len(tytuly[iterator]) // 2, tytuly[iterator], curses.A_BOLD)
 
         for indeks, rzad in enumerate(ekran[iterator]):
@@ -380,22 +348,23 @@ def menu_glowne(stdscr):
                 stdscr.addstr(y, x, rzad)
 
         stdscr.refresh()
-
+        
         try:            # jesli uzytkownik nic nie klika to klawisz = None, aby nie crashowalo
             klawisz = stdscr.getkey()
         except:
             klawisz = None
 
-        if klawisz == 'KEY_UP' or klawisz == 'w':
+        if klawisz == 'KEY_UP' or klawisz == 'w' or klawisz == 'W':
             obecny_rzad = (obecny_rzad - 1) % len(ekran[iterator])
             
-        elif klawisz == 'KEY_DOWN' or klawisz == 's':
+        elif klawisz == 'KEY_DOWN' or klawisz == 's' or klawisz == 'S':
             obecny_rzad = (obecny_rzad + 1) % len(ekran[iterator])
 
-        elif klawisz == 'q': # cofnij - dokonczyc, gdy zrobimy zasady gry oraz logowanie
+        elif klawisz == 'q' or klawisz == 'Q': # cofnij - dokonczyc, gdy zrobimy zasady gry oraz logowanie
             if iterator == 1:
                 stdscr.clear()
                 iterator = 0
+                obecny_rzad = 0
             
         elif klawisz == '\n':
             wybrana_opcja = ekran[iterator][obecny_rzad]
@@ -406,20 +375,48 @@ def menu_glowne(stdscr):
             elif wybrana_opcja == 'Nowa Gra':
                 stdscr.clear()
                 iterator = 1
+                obecny_rzad = 0
 
             elif wybrana_opcja == 'Wczytaj Gre':
                 pass # wczytaj zapamietana gdzies plansze
             
             elif wybrana_opcja == 'Zasady Gry':
-                pass # Zrobic nowego windowa lub pada na zasady, ktore trzeba w README.md uzupelnic
+                okno_informacyjne(stdscr, "ZASADY", "Unikaj bomb...") 
+                # Zrobic nowego windowa lub pada na zasady, ktore trzeba w README.md uzupelnic
+            
+            elif wybrana_opcja == 'Zaloguj':
+                if logowanie_interfejs(stdscr): # okno na wpisywanie loginu, okno na wpisywanie hasla) + info czy sie udalo
+                    czy_zalogowano = True
+                    obecny_rzad = 0
+
+            elif wybrana_opcja == 'Utworz Konto':
+                if tworzenie_konta_interfejs(stdscr): # okno na wpisywanie loginu, okno na wpisywanie hasla) + info czy sie udalo
+                    czy_zalogowano = True
+                    obecny_rzad = 0
+
+            elif wybrana_opcja == 'Wyloguj':
+                czy_zalogowano = False
+                okno_informacyjne(stdscr, "WYLOGOWANO", "Udalo sie wylogowac!")
+                obecny_rzad = 0
+
+            elif wybrana_opcja == 'Usun Konto':
+                if usuwanie_konta_interfejs(stdscr): # interfejs (czy na pewno chcesz usnac konto? Tak/Nie + trzeba wyrzucic to konto z pliku ...)
+                    czy_zalogowano = False
+                    obecny_rzad = 0
+
+            elif wybrana_opcja == 'Wczytaj Gre':
+                okno_informacyjne(stdscr, "WCZYTYWANIE", "Funkcja w budowie...")
+            
+            elif wybrana_opcja == 'Ranking':
+                okno_informacyjne(stdscr, "RANKING", "1. Agatka: 1 000 000 punktow :3")
             
             elif wybrana_opcja == poziomy[0]:
-                rozgrywka(stdscr, 'latwy')
+                rozgrywka(stdscr, 'latwy') # czy_zalogowano
 
             elif wybrana_opcja == poziomy[1]:
-                rozgrywka(stdscr, 'sredni')
+                rozgrywka(stdscr, 'sredni') # czy_zalogowano
 
             elif wybrana_opcja == poziomy[2]:
-                rozgrywka(stdscr, 'trudny')
+                rozgrywka(stdscr, 'trudny') # czy_zalogowano
 
 wrapper(menu_glowne)
