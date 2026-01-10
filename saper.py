@@ -30,20 +30,24 @@ def generowanie(plansza):
     #funkcja która generuje planszę(tablicę) o wymiarach plansza.wysokosc i plansza.szerokosc, która ma plansza.ilosc_bomb bomb
     #funkcja zmienia plansza.tablica
 
-def wygrana(plansza):
-    #placeholder
-    return False
+def wygrana(plansza): #ewentualnie można dodać jakiś warunek z flagami 
+    for y in plansza.wysokosc:
+        for x in plansza.szerokosc:
+            if plansza.tablica[y][x] != -1 and (plansza.wyswietlana[y][x] == 9 or plansza.wyswietlana[y][x] == 10):
+                return False
+    #jeśli wszystkie pola != -1 są odkryte to wygrana
+    return True
 
-def ruch(pozycja, plansza):
+def ruch(pozycja, plansza, ile_flag): #ile_flag - ile zostało, jeśli flaga usunięta to ile_flag += 1
     x, y = pozycja
     if(plansza.tablica[y][x] == -1):
         plansza.wyswietlana[y][x] = -2
-        return 2
-    if(plansza.wyswietlana[y][x] != 10):
+        return 2, ile_flag
+    if(plansza.wyswietlana[y][x] != 10): #trzeba odkryć sąsiadujące zera i jeśli usunięta flaga to ile_flag += 1
         plansza.wyswietlana[y][x] = plansza.tablica[y][x]
     if(wygrana(plansza)):
-        return 1
-    return 0
+        return 1, ile_flag
+    return 0, ile_flag
     #y - wiersz, x- kolumna
         #funkcja który sprawdza, czy można odkryć element, odkrywa i sprawdza czy partia jest wygrana/przegrana
         #funkcja zmienia plansza.wyswietlana
