@@ -34,7 +34,6 @@ def wygrana(plansza):
     return False
 def ruch(pozycja, plansza):
     y, x = pozycja
-    plansza.wyswietlana[y][x] = 1
     if(plansza.tablica[y][x] == -1):
         return 2
     if(plansza.wyswietlana[y][x] != 10):
