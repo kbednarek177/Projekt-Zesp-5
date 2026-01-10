@@ -38,12 +38,6 @@ def rozgrywka(stdscr, poziom):
     curses.init_pair(16, curses.COLOR_BLACK, curses.COLOR_WHITE)
     Miganie = curses.color_pair(16)
 
-    if poziom == 'latwy':    # poziomy
-        liczba_flag = 10
-    elif poziom == 'sredni':
-        liczba_flag = 40
-    else:
-        liczba_flag = 99
 
     # instrukcja na dole ekranu
     instrukcja = curses.newwin(2, szerokosc_ekranu, wysokosc_ekranu - 2, 0)
@@ -90,8 +84,17 @@ def rozgrywka(stdscr, poziom):
     przykladowa_plansza = curses.newwin(wys_planszy, szer_planszy, start_y, start_x)
     '''
     
+    if poziom == 'latwy':    # poziomy
+        szer, wys, bomby = 9,9,10
+        liczba_flag = 10
+    elif poziom == 'sredni':
+        szer, wys, bomby = 11,11,18
+        liczba_flag = 40
+    else:
+        szer, wys, bomby = 13,13,35
+        liczba_flag = 99
+
     #tworzenie planszy do gry
-    szer, wys, bomby = 9,9,10
     plansza = Plansza(szer, wys, bomby)
     generowanie(plansza)
 
