@@ -274,7 +274,8 @@ def rozgrywka(stdscr, poziom):
             liczba_flag = postaw_flage(pozycja, plansza, liczba_flag)
             
         elif klawisz == 'e' or klawisz == 'E': # funkcja bedzie zwracac 0 - kontynuacja, 1 - wygrana, 2 - przegrana
-            wynik = ruch(pozycja, plansza)     # jesli wygrana lub przegrana to przerwie petle gry
+            wynik, liczba_flag = ruch(pozycja, plansza, liczba_flag) 
+            # jesli wygrana lub przegrana to przerwie petle gry
 
         # mozliwy automatyczny restart??    
         # elif klawisz == 'r' or klawisz == 'R':
@@ -284,7 +285,20 @@ def rozgrywka(stdscr, poziom):
         curses.napms(50)    # dodalam opoznienie by nie wykorzystywac 100% procesora
 
     # poza petla, trzeba sprawdzic wartosc wynik. Jesli wynik = 1: wywolac wygrana(). Jesli wynik = 2: wywolac przegrana()
-
+    if wynik == 1:
+        pass
+     #wygrana
+        #przekaz wynik(czas) do konta, zapisz wynik
+        #petla wyswietla plansza.wyswietlana lub plansza.tablica (proponuje przycisk który przełącza między nimi)
+        # if klawisz == q: quit, elif klawisz == r?e?f?: zmien wyswietlana tablice:
+        #alternatywnie: migają na zmianę tablice
+    if wynik == 2:
+        pass
+     #przegrana
+        #podobnie jak wyżej, wyświetlić plansza.wyswietlana (tam będzie wiadomosc o odkrytej bombie(=-2))
+        #proponuję przycisk który zamienia wyswietlana tablicę (plansza.tablica/plansza.wyswietlana)
+        #alternatywnie: migają
+        
 
 # FUNKCJE TYMCZASOWE - tylko do testowania ;))
 def okno_informacyjne(stdscr, tytul, wiadomosc): # proste okno, czeka na input
