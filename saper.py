@@ -4,7 +4,7 @@ class Plansza:
     def __init__(self, szer, wys, bomby):
         self.szerokosc = szer
         self.wysokosc = wys
-        self.bomby = bomby
+        self.ilosc_bomb = bomby
         self.tablica = [[0 for i in range(szer)] for j in range(wys)]  # tablica[wiersz][kolumna]
         self.wyswietlana = [[9 for i in range(szer)] for j in range(wys)]
 
@@ -27,14 +27,17 @@ def generowanie(plansza):
                 # nie chcemy nadpisać min
                 if(plansza.tablica[sel_y+j][sel_x+i] > -1):
                     plansza.tablica[sel_y+j][sel_x+i] += 1
-    #funkcja która generuje planszę(tablicę) o wymiarach plansza.wys i plansza.szer, która ma plansza.bomby bomb
+    #funkcja która generuje planszę(tablicę) o wymiarach plansza.wysokosc i plansza.szerokosc, która ma plansza.ilosc_bomb bomb
     #funkcja zmienia plansza.tablica
+
 def wygrana(plansza):
     #placeholder
     return False
+
 def ruch(pozycja, plansza):
-    y, x = pozycja
+    x, y = pozycja
     if(plansza.tablica[y][x] == -1):
+        plansza.wyswietlana[y][x] = -2
         return 2
     if(plansza.wyswietlana[y][x] != 10):
         plansza.wyswietlana[y][x] = plansza.tablica[y][x]
@@ -47,7 +50,7 @@ def ruch(pozycja, plansza):
         
 def postaw_flage(pozycja, plansza, ile_flag):
     x, y = pozycja #y - wiersz, x- kolumna
-    if plansza.bomby - ile_flag < plansza.bomby:
+    if ile_flag > 0:
         if plansza.wyswietlana[y][x] == 9: #flagę postawiono
             plansza.wyswietlana[y][x] = 10
             ile_flag -= 1
