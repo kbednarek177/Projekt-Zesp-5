@@ -31,8 +31,8 @@ def generowanie(plansza):
     #funkcja zmienia plansza.tablica
 
 def wygrana(plansza): #ewentualnie można dodać jakiś warunek z flagami 
-    for y in plansza.wysokosc:
-        for x in plansza.szerokosc:
+    for y in range(plansza.wysokosc):
+        for x in range(plansza.szerokosc):
             if plansza.tablica[y][x] != -1 and (plansza.wyswietlana[y][x] == 9 or plansza.wyswietlana[y][x] == 10):
                 return False
     #jeśli wszystkie pola != -1 są odkryte to wygrana
