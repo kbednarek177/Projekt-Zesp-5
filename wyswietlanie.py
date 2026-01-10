@@ -1,7 +1,7 @@
 import time
 import curses
 from curses import wrapper
-from saper import postaw_flage, ruch, Plansza
+from saper import generowanie, postaw_flage, ruch, Plansza
 # from konta import zapisz #aktualnie nie istnieje
 
 def rozgrywka(stdscr, poziom):
@@ -67,7 +67,8 @@ def rozgrywka(stdscr, poziom):
     srodekx = 1
     srodeky = 0
 
-    #tworzenie tymczasowej planszy aby sprobowac ja wyswietlic - zamiast tego pojawi sie tu potem wywolanie funkcji GENEROWANIE
+    #tworzenie tymczasowej planszy aby sprobowac ja wyswietlic
+    '''
     tablica = [[9, 9, 9, 2, 0, 0, 1, 9, 9], 
                [9, 9, -2, 2, 0, 1, 3, 9, 9], 
                [1, 2, 1, 1, 0, 1, 9, 9, 9], 
@@ -87,9 +88,20 @@ def rozgrywka(stdscr, poziom):
     start_x = (szerokosc_ekranu // 2) - (szer_planszy // 2)
 
     przykladowa_plansza = curses.newwin(wys_planszy, szer_planszy, start_y, start_x)
+    '''
     
+    #tworzenie planszy do gry
     szer, wys, bomby = 9,9,10
     plansza = Plansza(szer, wys, bomby)
+    generowanie(plansza)
+
+    wys_okna = wys * (boky + 1)
+    szer_okna = szer * (bokx + 1)
+
+    start_y = (wysokosc_ekranu // 2) - (wys_okna // 2)
+    start_x = (szerokosc_ekranu // 2) - (szer_okna // 2)
+
+    okno_planszy = curses.newwin(wys_okna, szer_okna, start_y, start_x)
     # do wyswietlenia: plansza.wyswietlana. plansza.wyzwietlana[y = wiersz][x = kolumna]
     
     #podswietlane pole
@@ -136,22 +148,22 @@ def rozgrywka(stdscr, poziom):
             pass
         instrukcja.refresh()
 
-
+        
         # AKTUALNY STAN PLANSZY
-        przykladowa_plansza.erase()
+        okno_planszy.erase()
 
         kolory_liczb = {
             1: Liczba1, 2: Liczba2, 3: Liczba3, 4: Liczba4,
             5: Liczba5, 6: Liczba6, 7: Liczba7, 8: Liczba8
         }
 
-        for rzad in range(len(tablica)):
-            for kolumna in range(len(tablica[rzad])):
+        for rzad in range(szer):
+            for kolumna in range(wys):
 
                 pozycjax = kolumna * (bokx + 1)
                 pozycjay = rzad * (boky + 1)
                 
-                wartosc = tablica[rzad][kolumna]
+                wartosc = plansza.wyswietlana[rzad][kolumna]
                 
                 bg_style = OdkrytePole      
                 znak = ' '                  
@@ -181,10 +193,10 @@ def rozgrywka(stdscr, poziom):
 
                 for i in range(boky):
                     for j in range(bokx):
-                        przykladowa_plansza.addstr(pozycjay+i, pozycjax+j, ' ', bg_style)
+                        okno_planszy.addstr(pozycjay+i, pozycjax+j, ' ', bg_style)
                 
                 if znak != ' ':
-                    przykladowa_plansza.addstr(pozycjay+srodeky, pozycjax+srodekx, znak, znak_style)
+                    okno_planszy.addstr(pozycjay+srodeky, pozycjax+srodekx, znak, znak_style)
 
         try:    # zapobieganie blokowaniu sie gry
             klawisz = stdscr.getkey() # nasluchiwanie ruchow uzytkownika
@@ -198,7 +210,7 @@ def rozgrywka(stdscr, poziom):
             px_gracza = pozycja[0] * (bokx + 1)
             py_gracza = pozycja[1] * (boky + 1)
             
-            wartosc_pola = tablica[pozycja[1]][pozycja[0]]
+            wartosc_pola = plansza.wyswietlana[pozycja[1]][pozycja[0]]
             znak_do_wyswietlenia = ' '
             
             if wartosc_pola == 10:
@@ -210,12 +222,12 @@ def rozgrywka(stdscr, poziom):
             
             for i in range(boky):
                 for j in range(bokx):
-                    przykladowa_plansza.addstr(py_gracza + i, px_gracza + j, ' ', Miganie)
+                    okno_planszy.addstr(py_gracza + i, px_gracza + j, ' ', Miganie)
             
             if znak_do_wyswietlenia != ' ':
-                przykladowa_plansza.addstr(py_gracza + srodeky, px_gracza + srodekx, znak_do_wyswietlenia, Miganie)
+                okno_planszy.addstr(py_gracza + srodeky, px_gracza + srodekx, znak_do_wyswietlenia, Miganie)
 
-        przykladowa_plansza.refresh()
+        okno_planszy.refresh()
 
 
         # AKTUALIZOWANIE WSZYSTKIEGO I ODCZYTYWANIE POSUNIEC UZYTOWNIKA
@@ -242,24 +254,24 @@ def rozgrywka(stdscr, poziom):
 
         # PORUSZANIE SIE
         elif klawisz == 'KEY_LEFT' or klawisz == 'a' or klawisz == 'A':
-            pozycja = ((pozycja[0]-1)%plansza.szer, pozycja[1])
+            pozycja = ((pozycja[0]-1)%szer, pozycja[1])
             
         elif klawisz == 'KEY_DOWN' or klawisz == 's' or klawisz == 'S':
-            pozycja = ((pozycja[0]), (pozycja[1]+1)%plansza.wys)
+            pozycja = ((pozycja[0]), (pozycja[1]+1)%wys)
             
         elif klawisz == 'KEY_UP' or klawisz == 'w' or klawisz == 'W':
-            pozycja = ((pozycja[0]), (pozycja[1]-1)%plansza.wys) 
+            pozycja = ((pozycja[0]), (pozycja[1]-1)%wys)
             
         elif klawisz == 'KEY_RIGHT' or klawisz == 'd' or klawisz == 'D':
-            pozycja = ((pozycja[0]+1)%plansza.szer, pozycja[1])
+            pozycja = ((pozycja[0]+1)%szer, pozycja[1])
             
             
         # STAWIANIE FLAG
         elif klawisz == 'f' or klawisz == 'F':
-            liczba_flag = postaw_flage(pozycja, plansza,liczba_flag)
+            liczba_flag = postaw_flage(pozycja, plansza, liczba_flag)
             
-        # elif klawisz == 'e' or klawisz == 'E': # funkcja bedzie zwracac 0 - kontynuacja, 1 - wygrana, 2 - przegrana
-        #     wynik = ruch(pozycja, plansza)     # jesli wygrana lub przegrana to przerwie petle gry
+        elif klawisz == 'e' or klawisz == 'E': # funkcja bedzie zwracac 0 - kontynuacja, 1 - wygrana, 2 - przegrana
+            wynik = ruch(pozycja, plansza)     # jesli wygrana lub przegrana to przerwie petle gry
 
         # mozliwy automatyczny restart??    
         # elif klawisz == 'r' or klawisz == 'R':
