@@ -4,7 +4,7 @@ from curses import wrapper
 from saper import generowanie, postaw_flage, ruch, Plansza
 # from konta import zapisz #aktualnie nie istnieje
 
-def rozgrywka(stdscr, poziom):
+def rozgrywka(stdscr, plansza, liczba_flag):
     wysokosc_ekranu, szerokosc_ekranu = stdscr.getmaxyx()   # pobieranie wymiarow ekranu, zeby wiedziec gdzie jest "prawy gorny rog"
     klawisze_ruchu = {"w", "a", "s", "d", "W", "A", "S", "D", "KEY_UP", "KEY_DOWN", "KEY_LEFT", "KEY_RIGHT"}
 
@@ -83,20 +83,22 @@ def rozgrywka(stdscr, poziom):
 
     przykladowa_plansza = curses.newwin(wys_planszy, szer_planszy, start_y, start_x)
     '''
-    
-    if poziom == 'latwy':    # poziomy
-        szer, wys, bomby = 9,9,10
-        liczba_flag = 10
-    elif poziom == 'sredni':
-        szer, wys, bomby = 11,11,18
-        liczba_flag = 40
-    else:
-        szer, wys, bomby = 13,13,35
-        liczba_flag = 99
+    #przeniesione do menu:
+    # if poziom == 'latwy':    # poziomy
+    #     szer, wys, bomby = 9,9,10
+    #     liczba_flag = 10
+    # elif poziom == 'sredni':
+    #     szer, wys, bomby = 11,11,18
+    #     liczba_flag = 40
+    # else:
+    #     szer, wys, bomby = 13,13,35
+    #     liczba_flag = 99
 
-    #tworzenie planszy do gry
-    plansza = Plansza(szer, wys, bomby)
-    generowanie(plansza)
+    # #tworzenie planszy do gry
+    # plansza = Plansza(szer, wys, bomby)
+    # generowanie(plansza)
+
+    wys,szer = plansza.wysokosc, plansza.szerokosc
 
     wys_okna = wys * (boky + 1)
     szer_okna = szer * (bokx + 1)
@@ -298,7 +300,7 @@ def rozgrywka(stdscr, poziom):
         #podobnie jak wyżej, wyświetlić plansza.wyswietlana (tam będzie wiadomosc o odkrytej bombie(=-2))
         #proponuję przycisk który zamienia wyswietlana tablicę (plansza.tablica/plansza.wyswietlana)
         #alternatywnie: migają
-        
+
 
 # FUNKCJE TYMCZASOWE - tylko do testowania ;))
 def okno_informacyjne(stdscr, tytul, wiadomosc): # proste okno, czeka na input
@@ -407,6 +409,8 @@ def menu_glowne(stdscr):
                 obecny_rzad = 0
 
             elif wybrana_opcja == 'Wczytaj Gre':
+                #plansza, czas, liczba_flag = wczytaj(konto)
+                #rozgrywka(stdscr, plansza, liczba_flag) #,czas)
                 pass # wczytaj zapamietana gdzies plansze
             
             elif wybrana_opcja == 'Zasady Gry':
@@ -440,12 +444,24 @@ def menu_glowne(stdscr):
                 okno_informacyjne(stdscr, "RANKING", "1. Agatka: 1 000 000 punktow :3")
             
             elif wybrana_opcja == poziomy[0]:
-                rozgrywka(stdscr, 'latwy') # czy_zalogowano
+                szer, wys, bomby = 9,9,10
+                liczba_flag = 10
+                plansza = Plansza(szer,wys,bomby)
+                generowanie(plansza)
+                rozgrywka(stdscr, plansza, liczba_flag) # czy_zalogowano
 
             elif wybrana_opcja == poziomy[1]:
-                rozgrywka(stdscr, 'sredni') # czy_zalogowano
+                szer, wys, bomby = 11,11,18
+                liczba_flag = 20
+                plansza = Plansza(szer,wys,bomby)
+                generowanie(plansza)
+                rozgrywka(stdscr, plansza, liczba_flag) # czy_zalogowano
 
             elif wybrana_opcja == poziomy[2]:
-                rozgrywka(stdscr, 'trudny') # czy_zalogowano
+                szer, wys, bomby = 13,13,35
+                liczba_flag = 40
+                plansza = Plansza(szer,wys,bomby)
+                generowanie(plansza)
+                rozgrywka(stdscr, plansza, liczba_flag) # czy_zalogowano
 
 wrapper(menu_glowne)
