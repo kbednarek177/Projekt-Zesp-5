@@ -27,11 +27,21 @@ def czy_wolna(nazwa, nazwy_hasla): ## nazwy użytkownika nie mogą się powtarza
     return True
 
 
-def zaloz_konto(nazwy_hasla, nazwa, haslo_nieszyfr):    ## zakładanie konta. do pliku dodaję nowe dane na samym końcu. 
+def zaloz_konto(wczytane_dane, nazwa, haslo_nieszyfr):    ## zakładanie konta. do pliku dodaję nowe dane na samym końcu. 
+    
+    hasla = wczytane_dane[0]
+    najlepszy_wynik = wczytane_dane[1]
+    zapis_plansza1 = wczytane_dane[2]
+    zapis_plansza2 = wczytane_dane[3]
+    zapis_czas = wczytane_dane[4]
     
     haslo = hasz(haslo_nieszyfr)
     
-    nazwy_hasla[nazwa] = haslo
+    hasla[nazwa] = haslo
+    najlepszy_wynik[nazwa] = "0"
+    zapis_plansza1[nazwa] = "000"
+    zapis_plansza2[nazwa] = "000"
+    zapis_czas[nazwa] = 0
 
     return nazwa
 
@@ -123,18 +133,31 @@ def ll_str_przetlumacz(lista):
     return wynik
 
 
-def zapisz(nazwa, numery, pola, nazwy_zapis_num, nazwy_zapis_pola):
-    nazwy_zapis_num[nazwa] = ll_str_przetlumacz(numery)
-    nazwy_zapis_pola[nazwa] = ll_str_przetlumacz(pola)
+        ## nazwa, og plansza, plansza z odkrytymi polami, pozostałe flagi, czas, zapisane_dane[2], zapisane_dane[3], zapisane_dane[4]
+def zapisz(nazwa, numery, pola, poz_flagi, czas, nazwy_zapis_num, nazwy_zapis_pola, nazwy_zapis_czas):
     
-def wczytaj(nazwa, nazwy_zapis_num, nazwy_zapis_pola):
+    e_poz_flagi = str(poz_flagi)
+    if(poz_flagi < 10):
+        e_poz_flagi = '0' + e_poz_flagi
     
-    numery = str_ll_przetlumacz(nazwy_zapis_num[nazwa])
-    pola = str_ll_przetlumacz(nazwy_zapis_pola[nazwa])
+    nazwy_zapis_num[nazwa] = e_poz_flagi + ll_str_przetlumacz(numery)
+    nazwy_zapis_pola[nazwa] = e_poz_flagi + ll_str_przetlumacz(pola)
+    nazwy_zapis_czas[nazwa] = str(czas)
+    
+    
+        ##  nazwa, zapisane_dane[2], zapisane_dane[3], zapisane_dane[4]
+def wczytaj(nazwa, nazwy_zapis_num, nazwy_zapis_pola, nazwy_zapis_czas):
+    poz_flagi = int(nazwy_zapis_num[nazwa][:2])
+    numery = str_ll_przetlumacz(nazwy_zapis_num[nazwa][2:])
+    pola = str_ll_przetlumacz(nazwy_zapis_pola[nazwa][2:])
+    czas = int(nazwy_zapis_czas[nazwa])
     
     t = []
     t.append(numery)
     t.append(pola)
+    t.append(poz_flagi)
+    t.append(czas)
+    
     return t
 
 
@@ -146,6 +169,7 @@ def nadpisz_plik(tablica_dane, dane):
     dane_do_zapisu.append(tablica_dane[1])
     dane_do_zapisu.append(tablica_dane[2])
     dane_do_zapisu.append(tablica_dane[3])
+    dane_do_zapisu.append(tablica_dane[4])
     
     zapis = json.dumps(dane_do_zapisu)
     with open(dane, mode="w", encoding="utf-8") as d:
@@ -161,8 +185,11 @@ if(dane.stat().st_size != 0):
     
     
 else:
-    tablica_dane = [dict(), dict(), dict(), dict()]
+    tablica_dane = [dict(), dict(), dict(), dict(), dict()]
     
+if(len(tablica_dane) < 5):
+    for i in range(5-len(tablica_dane)):
+        tablica_dane.append(dict())
     
 
 
