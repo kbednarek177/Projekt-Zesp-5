@@ -2,6 +2,7 @@ import time
 import curses
 from curses import wrapper
 from saper import generowanie, postaw_flage, ruch, Plansza
+from curses import Textbox
 # from konta import zapisz #aktualnie nie istnieje
 
 def rozgrywka(stdscr, plansza, liczba_flag):
@@ -336,8 +337,10 @@ def okno_informacyjne(stdscr, tytul, wiadomosc): # proste okno, czeka na input
     stdscr.nodelay(True)
 
 
+
 def logowanie_interfejs(stdscr):
     # Tu kiedys bedzie wpisywanie loginu i hasla ...
+
     okno_informacyjne(stdscr, "LOGOWANIE", "Udalo sie zalogowac!")
     return True
 
