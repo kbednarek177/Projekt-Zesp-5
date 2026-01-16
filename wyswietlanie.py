@@ -2,7 +2,7 @@ import time
 import curses
 from curses import wrapper
 from saper import generowanie, postaw_flage, ruch, Plansza
-from curses import Textbox
+from curses.textpad import Textbox
 # from konta import zapisz #aktualnie nie istnieje
 
 def rozgrywka(stdscr, plansza, liczba_flag):
