@@ -248,8 +248,9 @@ def rozgrywka(stdscr, plansza, liczba_flag):
 
         elif klawisz == 'z' or klawisz == 'Z':
             pass
-            # zapisz(plansza) # aktualnie nie istnieje
-            # wypisz "zapisano"??
+            # if czy_zalogowano == True:
+            #     zapisz(plansza.tablica, plansza.wyswietlana, liczba_flag, czas)
+            #     wypisz "zapisano"??
             # zapisuje plansze
 
             # if czy_zalogowano == True:
@@ -289,17 +290,34 @@ def rozgrywka(stdscr, plansza, liczba_flag):
     # poza petla, trzeba sprawdzic wartosc wynik. Jesli wynik = 1: wywolac wygrana(). Jesli wynik = 2: wywolac przegrana()
     if wynik == 1:
         pass
+        # while True:
+        #     coś się dzieje 
+        #     zapisz wynik do konta
+        #     wyswietl plansze
+        #     try:    # zapobieganie blokowaniu sie gry
+        #         klawisz = stdscr.getkey() # nasluchiwanie ruchow uzytkownika
+        #     except:
+        #         klawisz = None
+
+        #     if klawisz == 'q' or klawisz == 'Q':
+        #         break
+            #skoncz gre / wyjdz do menu
      #wygrana
-        #przekaz wynik(czas) do konta, zapisz wynik
-        #petla wyswietla plansza.wyswietlana lub plansza.tablica (proponuje przycisk który przełącza między nimi)
-        # if klawisz == q: quit, elif klawisz == r?e?f?: zmien wyswietlana tablice:
-        #alternatywnie: migają na zmianę tablice
+        
     if wynik == 2:
         pass
+        # while True:
+        #     coś się dzieje 
+        #     wyswietl plansze 
+        #     try:    # zapobieganie blokowaniu sie gry
+        #         klawisz = stdscr.getkey() # nasluchiwanie ruchow uzytkownika
+        #     except:
+        #         klawisz = None
+
+        #     if klawisz == 'q' or klawisz == 'Q':
+        #         break
      #przegrana
-        #podobnie jak wyżej, wyświetlić plansza.wyswietlana (tam będzie wiadomosc o odkrytej bombie(=-2))
-        #proponuję przycisk który zamienia wyswietlana tablicę (plansza.tablica/plansza.wyswietlana)
-        #alternatywnie: migają
+        
 
 
 # FUNKCJE TYMCZASOWE - tylko do testowania ;))
@@ -409,8 +427,12 @@ def menu_glowne(stdscr):
                 obecny_rzad = 0
 
             elif wybrana_opcja == 'Wczytaj Gre':
-                #plansza, czas, liczba_flag = wczytaj(konto)
-                #rozgrywka(stdscr, plansza, liczba_flag) #,czas)
+                #t1, t2, czas, liczba_flag = wczytaj(konto)
+                #wys, szer = len(t1), len(t1[0])
+                #plansza = Plansza(szer,wys,99) #nie ma przechowywanej liczby bomb, ale chyba niepotrzebna w kodzie
+                #plansza.tablica = t1
+                #plansza.wyswietlana = t2
+                #rozgrywka(stdscr, plansza, liczba_flag) #,czas) #czy_zalogowano
                 pass # wczytaj zapamietana gdzies plansze
             
             elif wybrana_opcja == 'Zasady Gry':
@@ -455,13 +477,13 @@ def menu_glowne(stdscr):
                 liczba_flag = 20
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag) # czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag) # czas = 0, czy_zalogowano
 
             elif wybrana_opcja == poziomy[2]:
                 szer, wys, bomby = 13,13,35
                 liczba_flag = 40
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag) # czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag) # czas = 0, czy_zalogowano
 
 wrapper(menu_glowne)
