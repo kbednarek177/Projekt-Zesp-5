@@ -361,7 +361,7 @@ def okno_logowania(stdscr):
     okno.addstr(2, 1, "HASŁO: ", curses.A_BOLD)
     okno.refresh()
 
-    okno_na_haslo = curses.newwin(1, 20, (h+1)//2, w // 2 - 20)
+    okno_na_haslo = curses.newwin(1, 20, h//2, w // 2 - 20)
     okno_na_haslo.refresh()
 
     textbox_haslo = Textbox(okno_na_haslo)
@@ -373,14 +373,55 @@ def okno_logowania(stdscr):
 
     stdscr.getch()
 
+
+def okno_tworzenia_konta(stdscr):
+
+    h, w = stdscr.getmaxyx()
+    okno = curses.newwin(5, 60, h // 2 - 2, w // 2 - 30)
+    okno.box()
+
+
+    # Login
+
+    okno.addstr(1, 1, "LOGIN: ", curses.A_BOLD)
+    okno.refresh()
+
+    okno_na_login = curses.newwin(1, 20, h//2 - 1, w // 2 - 20)
+
+    okno_na_login.refresh()
+
+    textbox_login = Textbox(okno_na_login)
+    nowy_login = textbox_login.edit()
+    okno.refresh()
+
+    # Hasło
+
+    okno.addstr(2, 1, "HASŁO: ", curses.A_BOLD)
+    okno.refresh()
+
+    okno_na_haslo = curses.newwin(1, 20, h//2, w // 2 - 20)
+    okno_na_haslo.refresh()
+
+    textbox_haslo = Textbox(okno_na_haslo)
+    nowe_haslo = textbox_haslo.edit()
+
+    okno.refresh()
+
+    stdscr.getch()
+
+
 def logowanie_interfejs(stdscr):
-    # Tu kiedys bedzie wpisywanie loginu i hasla ...
-    okno_logowania(stdscr)
+
+    okno_logowania(stdscr) #Tutaj użytkownik podaje login i hasło
+
     okno_informacyjne(stdscr, "LOGOWANIE", "Udalo sie zalogowac!")
     return True
 
 
 def tworzenie_konta_interfejs(stdscr):
+
+    okno_tworzenia_konta(stdscr) #Tutaj użytkownik tworzy login i hasło
+
     okno_informacyjne(stdscr, "TWORZENIE KONTA", "Konto utworzone!")
     return True
 
