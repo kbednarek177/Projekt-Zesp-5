@@ -38,7 +38,7 @@ def zaloz_konto(wczytane_dane, nazwa, haslo_nieszyfr):    ## zakładanie konta. 
     haslo = hasz(haslo_nieszyfr)
     
     hasla[nazwa] = haslo
-    najlepszy_wynik[nazwa] = "0"
+    najlepszy_wynik[nazwa] = "l-1s-1t-1"
     zapis_plansza1[nazwa] = "000"
     zapis_plansza2[nazwa] = "000"
     zapis_czas[nazwa] = 0
@@ -63,42 +63,138 @@ def zaloguj(nazwa, haslo, nazwy_hasla):
 
 ## funkcje zwiazane z najlepszymi wynikami (korzystajace z T[1])
 
-def tablica_wynikow(nazwy_wynik):
+def znajdz_naj(w, nazwy):
     
-    nazwy_wynik_int = dict()
+    indeks = dict()
     
-    for x in nazwy_wynik:
-        y = int(nazwy_wynik[x])
-        nazwy_wynik_int[x] = y
+    for i in range(len(w)):
+        if(w[i] > 0):
+            indeks[nazwy[i]] = w[i]
     
     wartosci = []
-    for x in nazwy_wynik_int:
-        wartosci.append(nazwy_wynik_int[x])
-    
-    
-    wartosci.sort()
-    wartosci.reverse()
-    
-    s_wartosci = wartosci[:3]           
-    wynik = dict()
-    
-    tasma = 3
-    
-    for i in s_wartosci:
-        for x in nazwy_wynik_int:
-            if(nazwy_wynik_int[x] == i):
-                wynik[x] = i
-                tasma = tasma - 1
+    for w1 in w:
+        if(w1 > 0):
+            wartosci.append(w1)
             
+    wartosci.sort()
+    wynik = []
+    
+    if(len(wartosci) > 1):
+        s_wartosci = wartosci[:2]
+    
+        tasma = 2
+    
+        for i in s_wartosci:
+            for x in indeks:
+                if(indeks[x] == i):
+                    if(tasma == 0):
+                        break
+                    wynik.append(str(i) + "-" + x)
+                    tasma = tasma - 1
+                    
+    if(len(wartosci) == 1):
+        s_wartosci = wartosci[0]
+        
+        tasma = 2
+    
+        for x in indeks:
+            if(indeks[x] == s_wartosci):
+                if(tasma > 0):
+                    wynik.append(str(s_wartosci) + "-" + x)
+                    tasma = tasma - 1
+                    
+        if(len(wynik) < 2):
+            wynik.append("-1-wolnemiejsce")
+            
+    if(len(wartosci) == 0):
+        wynik.append("-1-wolnemiejsce")
+        wynik.append("-1-wolnemiejsce")
+    
     return wynik
 
 
-def naj_wynik(wynik, nazwa, nazwy_wynik):
-    if(nazwa not in nazwy_wynik):
-        nazwy_wynik[nazwa] = wynik
-    elif(wynik > int(nazwy_wynik[nazwa])):
-        nazwy_wynik[nazwa] = wynik
 
+def tablica_wynikow(nazwy_wynik):
+    
+    latwy = []
+    sredni = []
+    trudny = []
+    nazwy = []
+    wynik = []
+    for x in nazwy_wynik:
+        lista = wyniki(x, nazwy_wynik)
+        latwy.append(int(lista[0]))
+        sredni.append(int(lista[1]))
+        trudny.append(int(lista[2]))
+        nazwy.append(x)
+    
+    a = znajdz_naj(latwy, nazwy)
+    
+    for i in range(2):
+        wynik.append(a[i])
+    
+    a = znajdz_naj(sredni, nazwy)
+    
+    for i in range(2):
+        wynik.append(a[i])
+        
+    a = znajdz_naj(trudny, nazwy)
+    
+    for i in range(2):
+        wynik.append(a[i])
+        
+    return wynik
+
+def nadpisz_wynik(nazwa, indeks, nazwy_wynik):
+    napis = ""
+    for x in indeks:
+        napis = napis + x
+        napis = napis + indeks[x]
+    
+    nazwy_wynik[nazwa] = napis
+
+
+def naj_wynik(wynik, poziom, nazwa, nazwy_wynik):    ##    l000000s000000t000000
+    
+    tab = wyniki(nazwa, nazwy_wynik)
+    
+    indeks = {"l": tab[0], "s": tab[1], "t": tab[2]}
+    
+    if(int(indeks[poziom]) < 0):
+        indeks[poziom] = str(wynik)
+        nadpisz_wynik(nazwa, indeks, nazwy_wynik)
+    
+    elif(int(indeks[poziom]) > wynik):
+        indeks[poziom] = str(wynik)
+        nadpisz_wynik(nazwa, indeks, nazwy_wynik)
+        
+        
+def wyniki(nazwa, nazwy_wynik):
+    wyniki = nazwy_wynik[nazwa]
+    i = 1
+    latwy = ""
+    sredni = ""
+    trudny = ""
+
+    
+    while(wyniki[i] != 's'):
+        latwy = latwy + wyniki[i]
+        i = i + 1
+        
+    i = i + 1
+    
+    
+    while(wyniki[i] != 't'):
+        sredni = sredni + wyniki[i]
+        i = i + 1
+        
+    i = i + 1
+    
+    while(i < len(wyniki)):
+        trudny = trudny + wyniki[i]
+        i = i + 1
+        
+    return [latwy, sredni, trudny]
 
 ##funkcje związane z zapisem 
 
@@ -193,7 +289,7 @@ if(len(tablica_dane) < 5):
     
 
 
-nadpisz_plik(tablica_dane, dane)
+
     
 
 
