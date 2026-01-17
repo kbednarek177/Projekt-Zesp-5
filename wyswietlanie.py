@@ -415,6 +415,9 @@ def okno_tworzenia_konta(stdscr):
             okno.addstr(4, 1, "LOGIN ZAJĘTY", curses.A_BOLD | Blad)
             okno.refresh()
         else:
+            okno.move(4, 1)  # po wpisaniu poprawnego loginu będzie znikał komunikat "LOGIN ZAJĘTY"
+            okno.clrtoeol()
+            okno.refresh()
             break
 
     # Hasło
