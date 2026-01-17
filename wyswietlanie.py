@@ -228,6 +228,7 @@ def rozgrywka(stdscr, plansza, liczba_flag):
                 znak_do_wyswietlenia = str(wartosc_pola)
             
             for i in range(boky):
+
                 for j in range(bokx):
                     okno_planszy.addstr(py_gracza + i, px_gracza + j, ' ', Miganie)
             
@@ -374,6 +375,13 @@ def okno_logowania(stdscr):
 
     stdscr.getch()
 
+def login_zajety(login):
+    # tu będzie porównywanie wprowadzonego przez użytkownika loginu do loginów utworzonych kont
+
+    if(login!="jurek"):
+        return True
+    else:
+        return False
 
 def okno_tworzenia_konta(stdscr):
 
@@ -393,9 +401,21 @@ def okno_tworzenia_konta(stdscr):
 
     okno_na_login.refresh()
 
-    textbox_login = Textbox(okno_na_login)
-    nowy_login = textbox_login.edit()
-    okno.refresh()
+    while True:
+
+
+
+        okno_na_login.clear()
+        okno_na_login.refresh()
+
+        textbox_login = Textbox(okno_na_login)
+        nowy_login = textbox_login.edit().strip()
+
+        if login_zajety(nowy_login):
+            okno.addstr(4, 1, "LOGIN ZAJĘTY", curses.A_BOLD | Blad)
+            okno.refresh()
+        else:
+            break
 
     # Hasło
 
