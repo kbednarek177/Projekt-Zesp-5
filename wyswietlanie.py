@@ -409,6 +409,26 @@ def okno_tworzenia_konta(stdscr):
 
     stdscr.getch()
 
+def czy_na_pewno_usun(stdscr): #POTWIERDZENIE ZAMKNIĘCIA KONTA
+
+    curses.init_pair(20, curses.COLOR_RED, curses.COLOR_BLACK)
+    czerwony = curses.color_pair(20)
+    h, w = stdscr.getmaxyx()
+    okno = curses.newwin(3, 60, h // 2 - 2, w // 2 - 30)
+    okno.box()
+
+    okno.addstr(1, 1, "CZY NA PEWNO CHCESZ USUNĄĆ KONTO? [T/N]", curses.A_BOLD | czerwony)
+    okno.refresh()
+
+    okno_na_odp = curses.newwin(1, 3, h // 2 - 1, w // 2 + 20)
+    okno_na_odp.refresh()
+
+    textbox_odp = Textbox(okno_na_odp)
+
+    odp = textbox_odp.edit().strip().upper()
+
+    return odp == 'T'
+
 
 def logowanie_interfejs(stdscr):
 
@@ -426,10 +446,14 @@ def tworzenie_konta_interfejs(stdscr):
     return True
 
 
-def usuwanie_konta_interfejs(stdscr):
-    # Tu powinno byc pytanie "Czy na pewno?"
-    okno_informacyjne(stdscr, "USUWANIE KONTA", "Konto zostalo usuniete")
-    return True
+def usuwanie_konta_interfejs(stdscr): #ZWRACA T JEŚLI UŻYTKOWNIK POTWIERDZI USUNIĘCIE KONTA
+    if(czy_na_pewno_usun(stdscr)):
+        okno_informacyjne(stdscr, "USUWANIE KONTA", "Konto zostalo usuniete")
+        return True
+
+    else:
+        okno_informacyjne(stdscr, "USUWANIE KONTA", "Anulowano")
+        return False
 
 
 def menu_glowne(stdscr):
