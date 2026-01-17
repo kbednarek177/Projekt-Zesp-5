@@ -412,11 +412,10 @@ def okno_tworzenia_konta(stdscr):
         nowy_login = textbox_login.edit().strip()
 
         if login_zajety(nowy_login):
-            okno.addstr(4, 1, "LOGIN ZAJĘTY", curses.A_BOLD | Blad)
+            okno.addstr(4, 1, "LOGIN ZAJĘTY!", curses.A_BOLD | Blad)
             okno.refresh()
         else:
-            okno.move(4, 1)  # po wpisaniu poprawnego loginu będzie znikał komunikat "LOGIN ZAJĘTY"
-            okno.clrtoeol()
+            okno.addstr(4, 1, " "*len("LOGIN ZAJĘTY!"))
             okno.refresh()
             break
 
