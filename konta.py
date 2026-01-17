@@ -220,7 +220,7 @@ def ll_str_przetlumacz(lista):
     rozmiar = len(lista)
     wynik = wynik + str(rozmiar)
     
-    ##na chama wczytuje elementy z list 
+    ##wczytuje elementy z list 
     
     for x in lista:
         for y in x:
