@@ -40,6 +40,7 @@ def rozgrywka(stdscr, plansza, liczba_flag):
     Miganie = curses.color_pair(16)
 
 
+
     # instrukcja na dole ekranu
     instrukcja = curses.newwin(2, szerokosc_ekranu, wysokosc_ekranu - 2, 0)
     instrukcja.refresh()
@@ -324,7 +325,7 @@ def rozgrywka(stdscr, plansza, liczba_flag):
 # FUNKCJE TYMCZASOWE - tylko do testowania ;))
 def okno_informacyjne(stdscr, tytul, wiadomosc): # proste okno, czeka na input
     h, w = stdscr.getmaxyx()
-    okno = curses.newwin(5, 60, h//2 - 2, w//2 - 30)
+    okno = curses.newwin(6, 60, h//2 - 2, w//2 - 30)
     okno.box()
     
     okno.addstr(1, 2, tytul, curses.A_BOLD)
@@ -377,16 +378,18 @@ def okno_logowania(stdscr):
 def okno_tworzenia_konta(stdscr):
 
     h, w = stdscr.getmaxyx()
-    okno = curses.newwin(5, 60, h // 2 - 2, w // 2 - 30)
+    okno = curses.newwin(6, 60, h // 2 - 2, w // 2 - 30)
     okno.box()
 
+    curses.init_pair(17, curses.COLOR_RED, curses.COLOR_BLACK)  #nowy kolor do wyświetlania komunikatów o błędach
+    Blad = curses.color_pair(17)
 
     # Login
 
     okno.addstr(1, 1, "LOGIN: ", curses.A_BOLD)
     okno.refresh()
 
-    okno_na_login = curses.newwin(1, 20, h//2 - 1, w // 2 - 20)
+    okno_na_login = curses.newwin(1, 20, h//2 - 1, w // 2 - 10)
 
     okno_na_login.refresh()
 
@@ -399,7 +402,7 @@ def okno_tworzenia_konta(stdscr):
     okno.addstr(2, 1, "HASŁO: ", curses.A_BOLD)
     okno.refresh()
 
-    okno_na_haslo = curses.newwin(1, 20, h//2, w // 2 - 20)
+    okno_na_haslo = curses.newwin(1, 20, h//2, w // 2 - 10)
     okno_na_haslo.refresh()
 
     textbox_haslo = Textbox(okno_na_haslo)
@@ -407,17 +410,40 @@ def okno_tworzenia_konta(stdscr):
 
     okno.refresh()
 
-    stdscr.getch()
+    # Powtórz hasło
+
+    okno.addstr(3, 1, "POWTÓRZ HASŁO: ", curses.A_BOLD)
+    okno.refresh()
+
+    okno_powtorz_haslo = curses.newwin(1, 20, h//2 + 1, w // 2 - 10)
+    okno_powtorz_haslo.refresh()
+
+    while True:
+        okno_powtorz_haslo.clear()
+        okno_powtorz_haslo.refresh()
+
+        textbox_powtorz_haslo = Textbox(okno_powtorz_haslo)
+        powtorz_haslo = textbox_powtorz_haslo.edit()
+
+        if(nowe_haslo != powtorz_haslo):
+            okno.addstr(4, 1, "HASŁA NIEZGODNE - SPRÓBUJ PONOWNIE", curses.A_BOLD | Blad)
+            okno.refresh()
+        else:
+            break
+
+
 
 def czy_na_pewno_usun(stdscr): #POTWIERDZENIE ZAMKNIĘCIA KONTA
 
-    curses.init_pair(20, curses.COLOR_RED, curses.COLOR_BLACK)
-    czerwony = curses.color_pair(20)
+
     h, w = stdscr.getmaxyx()
     okno = curses.newwin(3, 60, h // 2 - 2, w // 2 - 30)
     okno.box()
 
-    okno.addstr(1, 1, "CZY NA PEWNO CHCESZ USUNĄĆ KONTO? [T/N]", curses.A_BOLD | czerwony)
+    curses.init_pair(17, curses.COLOR_RED, curses.COLOR_BLACK)
+    Blad = curses.color_pair(17)
+
+    okno.addstr(1, 1, "CZY NA PEWNO CHCESZ USUNĄĆ KONTO? [T/N]", curses.A_BOLD | Blad)
     okno.refresh()
 
     okno_na_odp = curses.newwin(1, 3, h // 2 - 1, w // 2 + 20)
