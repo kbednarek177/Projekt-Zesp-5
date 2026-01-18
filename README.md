@@ -4,10 +4,10 @@
 ### Zasady gry:
 Po planszy użytkownik porusza się klawiaturą:
 * **\[F\]** - postawienie flagi
-* **\[Q\]** - wróć do wyboru poziomu trudności
+* **\[Q\]** - wrócenie do wyboru poziomu trudności
 * **\[E\]** - odkrycie pola
-* **\[Z\]** - zapisz grę (dostępne tylko po zalogowaniu)
-* **\[A/W/S/D\] / strzalki** - poruszanie się po planszy
+* **\[Z\]** - zapisanie gry (dostępne tylko po zalogowaniu)
+* **\[A\]/\[W\]/\[S\]/\[D\] / strzałki** - poruszanie się po planszy
 
 Pola są dwóch typów:
 * pola z cyframi
@@ -42,7 +42,7 @@ W terminalu, po przejściu do właściwego folderu (Projekt-Zesp-5), należy wyw
 Po programie użytkownik porusza się klawiaturą: 
 * **\[Q\]** - wróć
 * **\[ENTER\]** - zatwierdź
-* **\[W/S\] / strzalki GÓRA i DÓŁ** - poruszanie się po **menu** i **poziomach trudności**
+* **\[W\]/\[S\] / strzałki GÓRA i DÓŁ** - poruszanie się po **menu** i **poziomach trudności**
 
 ### Dodatkowe funkcje programu:
 - **KONTA** - możliwe jest utworzenie konta, zalogowanie się na nie, wylogowanie, usunięcie konta oraz
