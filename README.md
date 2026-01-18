@@ -1,6 +1,8 @@
 # Saper
 ## Terminalowa gra wykonana w Pythonie
 
+<img width="1703" height="1409" alt="Zrzut ekranu 2026-01-18 185806" src="https://github.com/user-attachments/assets/1fe271d5-aa83-4685-9f24-3cc2c7aed212" />
+
 ### Zasady gry:
 Po planszy użytkownik porusza się klawiaturą:
 * **\[F\]** - postawienie flagi
