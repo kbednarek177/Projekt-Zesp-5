@@ -76,8 +76,16 @@ def odkrywanie(pozycja, plansza, ile_flag):
     if(plansza.tablica[y][x] == 0):
         if(x > 0):
             odkrywanie((x-1, y), plansza, ile_flag)
+            if(y > 0):
+                odkrywanie((x-1, y-1), plansza, ile_flag)
+            if(y < plansza.wysokosc-1):
+                odkrywanie((x-1, y+1), plansza, ile_flag)
         if(x < plansza.szerokosc-1):
             odkrywanie((x+1, y), plansza, ile_flag)
+            if(y > 0):
+                odkrywanie((x+1, y-1), plansza, ile_flag)
+            if(y < plansza.wysokosc-1):
+                odkrywanie((x+1, y+1), plansza, ile_flag)
         if(y > 0):
             odkrywanie((x, y-1), plansza, ile_flag)
         if(y < plansza.wysokosc-1):
