@@ -9,7 +9,7 @@ import konta
 
 # from konta import zapisz #aktualnie nie istnieje
 
-def rozgrywka(stdscr, plansza, liczba_flag):
+def rozgrywka(stdscr, plansza, liczba_flag, czas=0):
     wysokosc_ekranu, szerokosc_ekranu = stdscr.getmaxyx()   # pobieranie wymiarow ekranu, zeby wiedziec gdzie jest "prawy gorny rog"
     klawisze_ruchu = {"w", "a", "s", "d", "W", "A", "S", "D", "KEY_UP", "KEY_DOWN", "KEY_LEFT", "KEY_RIGHT"}
 
@@ -57,8 +57,8 @@ def rozgrywka(stdscr, plansza, liczba_flag):
     stdscr.erase()
     stdscr.refresh()
  
-    czas = 0
-    start = time.time()
+
+    start = time.time() - czas
     
     # boki pojedynczego pola
     bokx = 3 
@@ -578,14 +578,22 @@ def menu_glowne(stdscr):
                 iterator = 1
                 obecny_rzad = 0
 
+
             elif wybrana_opcja == 'Wczytaj Gre':
-                #t1, t2, czas, liczba_flag = wczytaj(konto)
-                #wys, szer = len(t1), len(t1[0])
-                #plansza = Plansza(szer,wys,99) #nie ma przechowywanej liczby bomb, ale chyba niepotrzebna w kodzie
-                #plansza.tablica = t1
-                #plansza.wyswietlana = t2
-                #rozgrywka(stdscr, plansza, liczba_flag) #,czas) #czy_zalogowano
-                pass # wczytaj zapamietana gdzies plansze
+
+                if czy_zalogowano:
+                    t1, t2, czas, liczba_flag = konta.wczytaj(login, konta.tablica_dane[2], konta.tablica_dane[3], konta.tablica_dane[4])
+
+                    wys, szer = len(t1), len(t1[0])
+
+                    plansza = Plansza(szer, wys, 99) #nie przechowujemy liczby bomb, chyba zbędne
+                    plansza.tablica = t1
+                    plansza.wyswietlana = t2
+
+                    rozgrywka(stdscr, plansza, liczba_flag)
+
+                else:
+                    okno_informacyjne(stdscr, "WCZYTYWANIE", "Musisz być zalogowany!")
             
             elif wybrana_opcja == 'Zasady Gry':
                 okno_informacyjne(stdscr, "ZASADY", "Unikaj bomb...") 
