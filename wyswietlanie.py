@@ -490,6 +490,24 @@ def usuwanie_konta_interfejs(stdscr): #ZWRACA T JEŚLI UŻYTKOWNIK POTWIERDZI US
         okno_informacyjne(stdscr, "USUWANIE KONTA", "Anulowano")
         return False
 
+def wyswietl_ranking(stdscr, wynik):
+    stdscr.clear()
+    h, w =stdscr.getmaxyx()
+
+    tytul = "RANKING"
+    stdscr.addstr(1, w//2 - len(tytul)//2, tytul, curses.A_BOLD)
+
+    poziomy = ["ŁATWY", "ŚREDNI", "TRUDNY"]
+
+    for poziom in range(3):
+        stdscr.addstr(3 + p*4, 2, poziomy[p] + ":", curses.A_BOLD)
+        for i in range(2):
+            wynik_do_wypisania = wynik[p*2 + i]
+            stdscr.addstr(4 + p*4 + i, 4, f"{i+1}. {wynik}")
+
+
+    stdscr.refresh()
+    stdscr.getch()
 
 def menu_glowne(stdscr):
     curses.curs_set(0)  # niech kursor sie nie wyswietla
@@ -609,15 +627,17 @@ def menu_glowne(stdscr):
 
             elif wybrana_opcja == 'Usun Konto':
                 if usuwanie_konta_interfejs(stdscr): # interfejs (czy na pewno chcesz usnac konto? Tak/Nie + trzeba wyrzucic to konto z pliku ...)
+                    konta.usun_konto(login, tablica_dane)
                     czy_zalogowano = False
                     obecny_rzad = 0
 
             elif wybrana_opcja == 'Wczytaj Gre':
                 okno_informacyjne(stdscr, "WCZYTYWANIE", "Funkcja w budowie...")
-            
+
             elif wybrana_opcja == 'Ranking':
                 okno_informacyjne(stdscr, "RANKING", "1. Agatka: 1 000 000 punktow :3")
-            
+                curses.wrapper(wyswietl_ranking, konta.tablica_wynikow(tablica_dane[1]))
+
             elif wybrana_opcja == poziomy[0]:
                 szer, wys, bomby = 9,9,10
                 liczba_flag = 10
