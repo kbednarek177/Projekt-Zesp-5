@@ -9,7 +9,7 @@ import konta
 
 # from konta import zapisz #aktualnie nie istnieje
 
-def rozgrywka(stdscr, plansza, liczba_flag, czas=0):
+def rozgrywka(stdscr, plansza, liczba_flag, czas=0, login=None, czy_zalogowano=False):
     wysokosc_ekranu, szerokosc_ekranu = stdscr.getmaxyx()   # pobieranie wymiarow ekranu, zeby wiedziec gdzie jest "prawy gorny rog"
     klawisze_ruchu = {"w", "a", "s", "d", "W", "A", "S", "D", "KEY_UP", "KEY_DOWN", "KEY_LEFT", "KEY_RIGHT"}
 
@@ -518,10 +518,13 @@ def menu_glowne(stdscr):
     menu_gosc = ['Nowa Gra', 'Zasady Gry', 'Zaloguj', 'Utworz Konto', 'Wyjscie']
     menu_user = ['Nowa Gra', 'Wczytaj Gre', 'Ranking', 'Zasady Gry', 'Wyloguj', 'Usun Konto', 'Wyjscie']
     poziomy = ['Latwy  ★☆☆☆☆ ', 'Sredni ★★★☆☆ ', 'Trudny ★★★★★ ']
-    
+
+    login = None
     czy_zalogowano = False
     iterator = 0
     obecny_rzad = 0
+
+
 
     while True:
         stdscr.erase()
@@ -590,7 +593,7 @@ def menu_glowne(stdscr):
                     plansza.tablica = t1
                     plansza.wyswietlana = t2
 
-                    rozgrywka(stdscr, plansza, liczba_flag, czas)
+                    rozgrywka(stdscr, plansza, liczba_flag, czas, login=login, czy_zalogowano=czy_zalogowano)
 
                 else:
                     okno_informacyjne(stdscr, "WCZYTYWANIE", "Musisz być zalogowany!")
@@ -602,11 +605,13 @@ def menu_glowne(stdscr):
             elif wybrana_opcja == 'Zaloguj':
                 if logowanie_interfejs(stdscr): # okno na wpisywanie loginu, okno na wpisywanie hasla) + info czy sie udalo
                     czy_zalogowano = True
+                    login = logowanie_interfejs(stdscr) #login jako zmienna globalna
                     obecny_rzad = 0
 
             elif wybrana_opcja == 'Utworz Konto':
                 if tworzenie_konta_interfejs(stdscr): # okno na wpisywanie loginu, okno na wpisywanie hasla) + info czy sie udalo
                     czy_zalogowano = True
+                    login = tworzenie_konta_interfejs(stdscr)
                     obecny_rzad = 0
 
             elif wybrana_opcja == 'Wyloguj':
