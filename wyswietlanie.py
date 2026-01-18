@@ -3,7 +3,7 @@ import curses
 from curses import wrapper
 
 from konta import tablica_dane
-from saper import generowanie, postaw_flage, ruch, Plansza
+from saper import generowanie, odkrywanie, postaw_flage, ruch, Plansza
 from curses.textpad import Textbox
 import konta
 
@@ -641,14 +641,14 @@ def menu_glowne(stdscr):
 
             elif wybrana_opcja == poziomy[1]:
                 szer, wys, bomby = 11,11,18
-                liczba_flag = 20
+                liczba_flag = 18
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
                 rozgrywka(stdscr, plansza, liczba_flag) # czas = 0, czy_zalogowano
 
             elif wybrana_opcja == poziomy[2]:
                 szer, wys, bomby = 13,13,35
-                liczba_flag = 40
+                liczba_flag = 35
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
                 rozgrywka(stdscr, plansza, liczba_flag) # czas = 0, czy_zalogowano
