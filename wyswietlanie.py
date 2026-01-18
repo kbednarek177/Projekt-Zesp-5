@@ -3,7 +3,7 @@ import curses
 from curses import wrapper
 
 from konta import tablica_dane
-from saper import generowanie, odkrywanie, postaw_flage, ruch, Plansza
+from saper import generowanie, odkrywanie, postaw_flage, wygrana, Plansza
 from curses.textpad import Textbox
 import konta
 
@@ -279,7 +279,9 @@ def rozgrywka(stdscr, plansza, liczba_flag, czas=0, login=None, czy_zalogowano=F
             liczba_flag = postaw_flage(pozycja, plansza, liczba_flag)
             
         elif klawisz == 'e' or klawisz == 'E': # funkcja bedzie zwracac 0 - kontynuacja, 1 - wygrana, 2 - przegrana
-            wynik, liczba_flag = ruch(pozycja, plansza, liczba_flag) 
+            wynik, liczba_flag = odkrywanie(pozycja, plansza, liczba_flag)
+            if wynik == 0 and wygrana(plansza): 
+                wynik = 1
             # jesli wygrana lub przegrana to przerwie petle gry
 
         # mozliwy automatyczny restart??    
