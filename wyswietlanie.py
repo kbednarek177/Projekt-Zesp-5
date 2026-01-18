@@ -603,15 +603,17 @@ def menu_glowne(stdscr):
                 # Zrobic nowego windowa lub pada na zasady, ktore trzeba w README.md uzupelnic
             
             elif wybrana_opcja == 'Zaloguj':
-                if logowanie_interfejs(stdscr): # okno na wpisywanie loginu, okno na wpisywanie hasla) + info czy sie udalo
+                login_zalogowanego = logowanie_interfejs(stdscr)
+                if login_zalogowanego: # okno na wpisywanie loginu, okno na wpisywanie hasla) + info czy sie udalo
                     czy_zalogowano = True
-                    login = logowanie_interfejs(stdscr) #login jako zmienna globalna
+                    login = login_zalogowanego
                     obecny_rzad = 0
 
             elif wybrana_opcja == 'Utworz Konto':
-                if tworzenie_konta_interfejs(stdscr): # okno na wpisywanie loginu, okno na wpisywanie hasla) + info czy sie udalo
+                nowy_login = tworzenie_konta_interfejs(stdscr)
+                if nowy_login: # okno na wpisywanie loginu, okno na wpisywanie hasla) + info czy sie udalo
                     czy_zalogowano = True
-                    login = tworzenie_konta_interfejs(stdscr)
+                    login = nowy_login
                     obecny_rzad = 0
 
             elif wybrana_opcja == 'Wyloguj':
