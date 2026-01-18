@@ -68,15 +68,16 @@ def postaw_flage(pozycja, plansza, ile_flag):
 def odkrywanie(pozycja, plansza, ile_flag):
     # rekurencyjne odkrywanie sąsiadujących pól o ile nie mają otaczających min
     x, y = pozycja
+    if(plansza.wyswietlana[y][x] == 9 and plansza.tablica[y][x] == -1):
+        return 2, ile_flag
     if(plansza.wyswietlana[y][x] != 9):
-        return
+        return 0, ile_flag
     ruch(pozycja, plansza, ile_flag)
     if(plansza.tablica[y][x] == 0):
         odkrywanie((x-1, y), plansza, ile_flag)
         odkrywanie((x+1, y), plansza, ile_flag)
         odkrywanie((x, y-1), plansza, ile_flag)
         odkrywanie((x, y+1), plansza, ile_flag)
-
-
+    return 0, ile_flag
 
 
