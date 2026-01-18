@@ -590,7 +590,7 @@ def menu_glowne(stdscr):
                     plansza.tablica = t1
                     plansza.wyswietlana = t2
 
-                    rozgrywka(stdscr, plansza, liczba_flag)
+                    rozgrywka(stdscr, plansza, liczba_flag, czas)
 
                 else:
                     okno_informacyjne(stdscr, "WCZYTYWANIE", "Musisz być zalogowany!")
