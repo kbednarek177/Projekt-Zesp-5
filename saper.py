@@ -62,10 +62,20 @@ def postaw_flage(pozycja, plansza, ile_flag):
             plansza.wyswietlana[y][x] = 9
             ile_flag += 1
     return ile_flag
-        #funkcja która sprawdza, czy miejsce jedt zakryte, jeśli tak to daje/usuwa flagę
+        #funkcja która sprawdza, czy miejsce jest zakryte, jeśli tak to daje/usuwa flagę
         #zmienia plansza.wyswietlana
 
-
+def odkrywanie(pozycja, plansza, ile_flag):
+    # rekurencyjne odkrywanie sąsiadujących pól o ile nie mają otaczających min
+    x, y = pozycja
+    if(plansza.wyswietlana[y][x] != 9):
+        return
+    ruch(pozycja, plansza, ile_flag)
+    if(plansza.tablica[y][x] == 0):
+        odkrywanie((x-1, y), plansza, ile_flag)
+        odkrywanie((x+1, y), plansza, ile_flag)
+        odkrywanie((x, y-1), plansza, ile_flag)
+        odkrywanie((x, y+1), plansza, ile_flag)
 
 
 
