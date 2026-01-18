@@ -343,6 +343,8 @@ def okno_logowania(stdscr):
     okno = curses.newwin(5, 60, h // 2 - 2, w // 2 - 30)
     okno.box()
 
+    curses.init_pair(17, curses.COLOR_RED, curses.COLOR_BLACK)  #nowy kolor do wyświetlania komunikatów o błędach
+    Blad = curses.color_pair(17)
 
     # Login
 
@@ -353,9 +355,23 @@ def okno_logowania(stdscr):
 
     okno_na_login.refresh()
 
-    textbox_login = Textbox(okno_na_login)
-    login = textbox_login.edit()
-    okno.refresh()
+    while True:
+
+        okno_na_login.clear()
+        okno_na_login.refresh()
+
+        textbox_login = Textbox(okno_na_login)
+        login = textbox_login.edit().strip()
+
+        if konta.czy_wolna(login, tablica_dane[0]):
+            okno.addstr(3, 1, "NIE MA TAKIEGO LOGINU!", curses.A_BOLD | Blad)
+            okno.refresh()
+        else:   #wymazanie komunikatu
+            okno.addstr(3, 1, " "*len("NIE MA TAKIEGO LOGINU!"))
+            okno.refresh()
+            break
+
+
 
     # Hasło
 
@@ -365,10 +381,21 @@ def okno_logowania(stdscr):
     okno_na_haslo = curses.newwin(1, 20, h//2, w // 2 - 20)
     okno_na_haslo.refresh()
 
-    textbox_haslo = Textbox(okno_na_haslo)
-    haslo = textbox_haslo.edit()
+    while True:
+        okno_na_haslo.clear()
+        okno_na_haslo.refresh()
 
-    okno.refresh()
+        textbox_haslo = Textbox(okno_na_haslo)
+        haslo = textbox_haslo.edit().strip()
+
+        if not konta.sprawdz_haslo(login, haslo, tablica_dane[0]):
+            okno.addstr(3, 1, "ZŁE HASŁO!", curses.A_BOLD | Blad)
+            okno.refresh()
+            time.sleep(1)
+            okno.addstr(3, 1, " " * len("ZŁE HASŁO!"))
+            okno.refresh()
+        else:
+            break
 
 
 
@@ -405,7 +432,7 @@ def okno_tworzenia_konta(stdscr):
         if not konta.czy_wolna(nowy_login, tablica_dane[0]):
             okno.addstr(4, 1, "LOGIN ZAJĘTY!", curses.A_BOLD | Blad)
             okno.refresh()
-        else:
+        else:   #wymazanie komunikatu
             okno.addstr(4, 1, " "*len("LOGIN ZAJĘTY!"))
             okno.refresh()
             break
