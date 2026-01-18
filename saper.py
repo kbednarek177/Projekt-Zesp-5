@@ -74,10 +74,14 @@ def odkrywanie(pozycja, plansza, ile_flag):
         return 0, ile_flag
     ruch(pozycja, plansza, ile_flag)
     if(plansza.tablica[y][x] == 0):
-        odkrywanie((x-1, y), plansza, ile_flag)
-        odkrywanie((x+1, y), plansza, ile_flag)
-        odkrywanie((x, y-1), plansza, ile_flag)
-        odkrywanie((x, y+1), plansza, ile_flag)
+        if(x > 0):
+            odkrywanie((x-1, y), plansza, ile_flag)
+        if(x < plansza.szerokosc-1):
+            odkrywanie((x+1, y), plansza, ile_flag)
+        if(y > 0):
+            odkrywanie((x, y-1), plansza, ile_flag)
+        if(x < plansza.wysokosc-1):
+            odkrywanie((x, y+1), plansza, ile_flag)
     return 0, ile_flag
 
 
