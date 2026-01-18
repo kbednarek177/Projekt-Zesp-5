@@ -3,7 +3,7 @@ import curses
 from curses import wrapper
 
 from konta import tablica_dane
-from saper import generowanie, postaw_flage, ruch, Plansza
+from saper import generowanie, odkrywanie, postaw_flage, wygrana, Plansza
 from curses.textpad import Textbox
 import konta
 
@@ -67,43 +67,6 @@ def rozgrywka(stdscr, plansza, liczba_flag, czas=0, login=None, czy_zalogowano=F
     srodekx = 1
     srodeky = 0
 
-    #tworzenie tymczasowej planszy aby sprobowac ja wyswietlic
-    '''
-    tablica = [[9, 9, 9, 2, 0, 0, 1, 9, 9], 
-               [9, 9, -2, 2, 0, 1, 3, 9, 9], 
-               [1, 2, 1, 1, 0, 1, 9, 9, 9], 
-               [0, 0, 0, 0, 1, 3, 9, 9, 9], 
-               [0, 0, 0, 0, 1, 10, 9, 9, 9], 
-               [1, 1, 0, 0, 1, 2, 2, 1, 9], 
-               [-1, 1, 0, 0, 0, 0, 0, 0, 9], 
-               [9, 1, 0, 0, 0, 0, 0, 0, 9], 
-               [9, 9, 9, 9, 9, 9, 9, 9, 9]]
-    
-    # Liczba wierszy * wysokosc pola (bok+ramka)
-    wys_planszy = len(tablica) * (boky + 1) 
-    # Liczba kolumn * szerokosc pola (bok+ramka)
-    szer_planszy = len(tablica[0]) * (bokx + 1)
-
-    start_y = (wysokosc_ekranu // 2) - (wys_planszy // 2)
-    start_x = (szerokosc_ekranu // 2) - (szer_planszy // 2)
-
-    przykladowa_plansza = curses.newwin(wys_planszy, szer_planszy, start_y, start_x)
-    '''
-    #przeniesione do menu:
-    # if poziom == 'latwy':    # poziomy
-    #     szer, wys, bomby = 9,9,10
-    #     liczba_flag = 10
-    # elif poziom == 'sredni':
-    #     szer, wys, bomby = 11,11,18
-    #     liczba_flag = 40
-    # else:
-    #     szer, wys, bomby = 13,13,35
-    #     liczba_flag = 99
-
-    # #tworzenie planszy do gry
-    # plansza = Plansza(szer, wys, bomby)
-    # generowanie(plansza)
-
     wys,szer = plansza.wysokosc, plansza.szerokosc
 
     wys_okna = wys * (boky + 1)
@@ -120,7 +83,8 @@ def rozgrywka(stdscr, plansza, liczba_flag, czas=0, login=None, czy_zalogowano=F
     wynik = 0
 
 
-    while not wynik:     # tutaj trzeba pracowac nad wyswietlaniem planszy 
+    while True:     # tutaj trzeba pracowac nad wyswietlaniem planszy 
+            
         # ZEGAR:
         zegar.erase()
 
@@ -213,7 +177,6 @@ def rozgrywka(stdscr, plansza, liczba_flag, czas=0, login=None, czy_zalogowano=F
             klawisz = stdscr.getkey() # nasluchiwanie ruchow uzytkownika
         except:
             klawisz = None
-        
 
         # MIGAJACE POLA - GRY UZYTKOWNIK JEST NA DANYM POLU TO ONO 'MIGA'
 
@@ -240,6 +203,35 @@ def rozgrywka(stdscr, plansza, liczba_flag, czas=0, login=None, czy_zalogowano=F
                 okno_planszy.addstr(py_gracza + srodeky, px_gracza + srodekx, znak_do_wyswietlenia, Miganie)
 
         okno_planszy.refresh()
+
+
+        if wynik == 1 or wynik == 2: # po zakonczeniu gry
+
+            tmph, tmpw = stdscr.getmaxyx()
+            okno_wyniku = curses.newwin(6, 60, tmph//2 - 2, tmpw//2 - 30)
+            okno_wyniku.box()
+
+            if wynik == 2:
+                tmpx = boompozycja[0] * (bokx+1)
+                tmpy = boompozycja[1] * (boky+1)
+                okno_planszy.addstr(tmpy, tmpx+1, '◉', Boom)
+                okno_planszy.addstr(tmpy, tmpx, ' ', Boom)
+                okno_planszy.addstr(tmpy, tmpx+2, ' ', Boom)
+                okno_wyniku.addstr(1, 2, "Przegrana!", curses.A_BOLD)
+                okno_wyniku.addstr(2, 2, "Bylo blisko!")
+                okno_wyniku.addstr(3, 2, "Nacisnij dowolny klawisz aby wyjsc :3", curses.A_DIM)
+            else:
+                okno_wyniku.addstr(1, 2, "Wygrana!!!", curses.A_BOLD)
+                okno_wyniku.addstr(2, 2, "Gratulacje!")
+                okno_wyniku.addstr(3, 2, "Nacisnij dowolny klawisz aby wyjsc :3", curses.A_DIM)
+
+            okno_planszy.refresh()
+            okno_wyniku.refresh()
+        
+            stdscr.nodelay(False) 
+            stdscr.getch()        
+            stdscr.nodelay(True)
+            break
 
 
         # AKTUALIZOWANIE WSZYSTKIEGO I ODCZYTYWANIE POSUNIEC UZYTOWNIKA
@@ -279,47 +271,14 @@ def rozgrywka(stdscr, plansza, liczba_flag, czas=0, login=None, czy_zalogowano=F
             liczba_flag = postaw_flage(pozycja, plansza, liczba_flag)
             
         elif klawisz == 'e' or klawisz == 'E': # funkcja bedzie zwracac 0 - kontynuacja, 1 - wygrana, 2 - przegrana
-            wynik, liczba_flag = ruch(pozycja, plansza, liczba_flag) 
+            wynik, liczba_flag = odkrywanie(pozycja, plansza, liczba_flag)
+            if wynik == 0 and wygrana(plansza): 
+                wynik = 1
+            if wynik == 2:
+                boompozycja = pozycja
             # jesli wygrana lub przegrana to przerwie petle gry
-
-        # mozliwy automatyczny restart??    
-        # elif klawisz == 'r' or klawisz == 'R':
-        #     pass
-        #     # koniec i poczatek nowej rozgrywki, restart
             
         curses.napms(50)    # dodalam opoznienie by nie wykorzystywac 100% procesora
-
-    # poza petla, trzeba sprawdzic wartosc wynik. Jesli wynik = 1: wywolac wygrana(). Jesli wynik = 2: wywolac przegrana()
-    if wynik == 1:
-        pass
-        # while True:
-        #     coś się dzieje 
-        #     zapisz wynik do konta
-        #     wyswietl plansze
-        #     try:    # zapobieganie blokowaniu sie gry
-        #         klawisz = stdscr.getkey() # nasluchiwanie ruchow uzytkownika
-        #     except:
-        #         klawisz = None
-
-        #     if klawisz == 'q' or klawisz == 'Q':
-        #         break
-            #skoncz gre / wyjdz do menu
-     #wygrana
-        
-    if wynik == 2:
-        pass
-        # while True:
-        #     coś się dzieje 
-        #     wyswietl plansze 
-        #     try:    # zapobieganie blokowaniu sie gry
-        #         klawisz = stdscr.getkey() # nasluchiwanie ruchow uzytkownika
-        #     except:
-        #         klawisz = None
-
-        #     if klawisz == 'q' or klawisz == 'Q':
-        #         break
-     #przegrana
-        
 
 
 # FUNKCJE TYMCZASOWE - tylko do testowania ;))
@@ -668,14 +627,14 @@ def menu_glowne(stdscr):
 
             elif wybrana_opcja == poziomy[1]:
                 szer, wys, bomby = 11,11,18
-                liczba_flag = 20
+                liczba_flag = 18
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
                 rozgrywka(stdscr, plansza, liczba_flag) # czas = 0, czy_zalogowano
 
             elif wybrana_opcja == poziomy[2]:
                 szer, wys, bomby = 13,13,35
-                liczba_flag = 40
+                liczba_flag = 35
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
                 rozgrywka(stdscr, plansza, liczba_flag) # czas = 0, czy_zalogowano
