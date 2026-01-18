@@ -120,7 +120,8 @@ def rozgrywka(stdscr, plansza, liczba_flag, czas=0, login=None, czy_zalogowano=F
     wynik = 0
 
 
-    while not wynik:     # tutaj trzeba pracowac nad wyswietlaniem planszy 
+    while True:     # tutaj trzeba pracowac nad wyswietlaniem planszy 
+            
         # ZEGAR:
         zegar.erase()
 
@@ -213,7 +214,6 @@ def rozgrywka(stdscr, plansza, liczba_flag, czas=0, login=None, czy_zalogowano=F
             klawisz = stdscr.getkey() # nasluchiwanie ruchow uzytkownika
         except:
             klawisz = None
-        
 
         # MIGAJACE POLA - GRY UZYTKOWNIK JEST NA DANYM POLU TO ONO 'MIGA'
 
@@ -240,6 +240,35 @@ def rozgrywka(stdscr, plansza, liczba_flag, czas=0, login=None, czy_zalogowano=F
                 okno_planszy.addstr(py_gracza + srodeky, px_gracza + srodekx, znak_do_wyswietlenia, Miganie)
 
         okno_planszy.refresh()
+
+
+        if wynik == 1 or wynik == 2: # po zakonczeniu gry
+
+            tmph, tmpw = stdscr.getmaxyx()
+            okno_wyniku = curses.newwin(6, 60, tmph//2 - 2, tmpw//2 - 30)
+            okno_wyniku.box()
+
+            if wynik == 2:
+                tmpx = boompozycja[0] * (bokx+1)
+                tmpy = boompozycja[1] * (boky+1)
+                okno_planszy.addstr(tmpy, tmpx+1, '◉', Boom)
+                okno_planszy.addstr(tmpy, tmpx, ' ', Boom)
+                okno_planszy.addstr(tmpy, tmpx+2, ' ', Boom)
+                okno_wyniku.addstr(1, 2, "Przegrana!", curses.A_BOLD)
+                okno_wyniku.addstr(2, 2, "Bylo blisko!")
+                okno_wyniku.addstr(3, 2, "Nacisnij dowolny klawisz aby wyjsc :3", curses.A_DIM)
+            else:
+                okno_wyniku.addstr(1, 2, "Wygrana!!!", curses.A_BOLD)
+                okno_wyniku.addstr(2, 2, "Gratulacje!")
+                okno_wyniku.addstr(3, 2, "Nacisnij dowolny klawisz aby wyjsc :3", curses.A_DIM)
+
+            okno_planszy.refresh()
+            okno_wyniku.refresh()
+        
+            stdscr.nodelay(False) 
+            stdscr.getch()        
+            stdscr.nodelay(True)
+            break
 
 
         # AKTUALIZOWANIE WSZYSTKIEGO I ODCZYTYWANIE POSUNIEC UZYTOWNIKA
@@ -282,6 +311,8 @@ def rozgrywka(stdscr, plansza, liczba_flag, czas=0, login=None, czy_zalogowano=F
             wynik, liczba_flag = odkrywanie(pozycja, plansza, liczba_flag)
             if wynik == 0 and wygrana(plansza): 
                 wynik = 1
+            if wynik == 2:
+                boompozycja = pozycja
             # jesli wygrana lub przegrana to przerwie petle gry
 
         # mozliwy automatyczny restart??    
