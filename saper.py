@@ -54,13 +54,16 @@ def ruch(pozycja, plansza, ile_flag): #ile_flag - ile zostało, jeśli flaga usu
         
 def postaw_flage(pozycja, plansza, ile_flag):
     x, y = pozycja #y - wiersz, x- kolumna
-    if ile_flag > 0:
-        if plansza.wyswietlana[y][x] == 9: #flagę postawiono
-            plansza.wyswietlana[y][x] = 10
-            ile_flag -= 1
-        elif plansza.wyswietlana[y][x] == 10: #flagę usunięto
-            plansza.wyswietlana[y][x] = 9
-            ile_flag += 1
+    
+    if plansza.wyswietlana[y][x] == 10: #flagę usunięto
+                plansza.wyswietlana[y][x] = 9
+                ile_flag += 1
+    else:            
+        if ile_flag > 0:
+            if plansza.wyswietlana[y][x] == 9: #flagę postawiono
+                plansza.wyswietlana[y][x] = 10
+                ile_flag -= 1
+
     return ile_flag
         #funkcja która sprawdza, czy miejsce jest zakryte, jeśli tak to daje/usuwa flagę
         #zmienia plansza.wyswietlana
