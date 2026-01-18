@@ -80,7 +80,7 @@ def odkrywanie(pozycja, plansza, ile_flag):
             odkrywanie((x+1, y), plansza, ile_flag)
         if(y > 0):
             odkrywanie((x, y-1), plansza, ile_flag)
-        if(x < plansza.wysokosc-1):
+        if(y < plansza.wysokosc-1):
             odkrywanie((x, y+1), plansza, ile_flag)
     return 0, ile_flag
 
