@@ -1,8 +1,12 @@
 import time
 import curses
 from curses import wrapper
+
+from konta import tablica_dane
 from saper import generowanie, postaw_flage, ruch, Plansza
 from curses.textpad import Textbox
+import konta
+
 # from konta import zapisz #aktualnie nie istnieje
 
 def rozgrywka(stdscr, plansza, liczba_flag):
@@ -250,15 +254,10 @@ def rozgrywka(stdscr, plansza, liczba_flag):
             #skoncz gre / wyjdz do menu
 
         elif klawisz == 'z' or klawisz == 'Z':
-            pass
-            # if czy_zalogowano == True:
-            #     zapisz(plansza.tablica, plansza.wyswietlana, liczba_flag, czas)
-            #     wypisz "zapisano"??
-            # zapisuje plansze
-
-            # if czy_zalogowano == True:
-            #       przekaz_zuzi_plansze()
-            #       wyswietl_zapisano() - w boxie, gdzies na dole ...
+            if czy_zalogowano == True:
+                konta.zapisz(login, plansza.tablica, plansza.wyswietlana, liczba_flag, czas, nazwy_zapis_num=konta.tablice_dane[2], nazwy_zapis_pola=konta.tablica_dane[3], nazwy_zapis_czas=konta.tablica_dane[4])
+                konta.nadpisz_plik(konta.tablica_dane, konta.dane)
+                okno_informacyjne(stdscr, "ZAPIS", "Zapisano rozgrywkę")
 
 
         # PORUSZANIE SIE
@@ -373,15 +372,9 @@ def okno_logowania(stdscr):
 
 
 
-    stdscr.getch()
+    return login.strip(), haslo.strip()
 
-def login_zajety(login):
-    # tu będzie porównywanie wprowadzonego przez użytkownika loginu do loginów utworzonych kont
 
-    if(login!="jurek"):
-        return True
-    else:
-        return False
 
 def okno_tworzenia_konta(stdscr):
 
@@ -403,21 +396,20 @@ def okno_tworzenia_konta(stdscr):
 
     while True:
 
-
-
         okno_na_login.clear()
         okno_na_login.refresh()
 
         textbox_login = Textbox(okno_na_login)
         nowy_login = textbox_login.edit().strip()
 
-        if login_zajety(nowy_login):
+        if not konta.czy_wolna(nowy_login, tablica_dane[0]):
             okno.addstr(4, 1, "LOGIN ZAJĘTY!", curses.A_BOLD | Blad)
             okno.refresh()
         else:
             okno.addstr(4, 1, " "*len("LOGIN ZAJĘTY!"))
             okno.refresh()
             break
+
 
     # Hasło
 
@@ -453,7 +445,7 @@ def okno_tworzenia_konta(stdscr):
         else:
             break
 
-
+    return nowy_login.strip(), nowe_haslo.strip()
 
 def czy_na_pewno_usun(stdscr): #POTWIERDZENIE ZAMKNIĘCIA KONTA
 
@@ -480,18 +472,27 @@ def czy_na_pewno_usun(stdscr): #POTWIERDZENIE ZAMKNIĘCIA KONTA
 
 def logowanie_interfejs(stdscr):
 
-    okno_logowania(stdscr) #Tutaj użytkownik podaje login i hasło
-
-    okno_informacyjne(stdscr, "LOGOWANIE", "Udalo sie zalogowac!")
-    return True
+    login, haslo= okno_logowania(stdscr) #funkcja zwraca podane przez użytkownika dane
+    if konta.zaloguj(login, haslo, tablica_dane[0]) != -1:
+        okno_informacyjne(stdscr, "LOGOWANIE", "Udalo sie zalogowac!")
+        return login
+    else:
+        okno_informacyjne(stdscr, "LOGOWANIE", "Błędne dane")
+        return None
 
 
 def tworzenie_konta_interfejs(stdscr):
 
-    okno_tworzenia_konta(stdscr) #Tutaj użytkownik tworzy login i hasło
+    login, haslo = okno_tworzenia_konta(stdscr) #Tutaj użytkownik tworzy login i hasło
 
-    okno_informacyjne(stdscr, "TWORZENIE KONTA", "Konto utworzone!")
-    return True
+    if konta.czy_wolna(login, tablica_dane[0]):
+        konta.zaloz_konto(tablica_dane, login, haslo)
+        konta.nadpisz_plik(tablica_dane, konta.dane)
+        okno_informacyjne(stdscr, "TWORZENIE KONTA", "Konto utworzone!")
+        return login
+    else:
+        okno_informacyjne(stdscr, "TWORZENIE KONTA", "Login zajęty!")
+        return None
 
 
 def usuwanie_konta_interfejs(stdscr): #ZWRACA T JEŚLI UŻYTKOWNIK POTWIERDZI USUNIĘCIE KONTA
