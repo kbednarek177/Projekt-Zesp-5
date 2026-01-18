@@ -9,14 +9,17 @@ Po planszy użytkownik porusza się klawiaturą:
 * **\[Z\]** - zapisanie gry (dostępne tylko po zalogowaniu)
 * **\[A\]/\[W\]/\[S\]/\[D\] / strzałki** - poruszanie się po planszy
 
-Pola są dwóch typów:
+Pola są trzech typów:
 * pola z cyframi
+* pola puste
 * pola minowe
 
 Odkrycie **pola minowego** oznacza **przegraną**.
 
 **Cyfra na polu** informuje o tym, ile **min** styka się z nim bezpośrednio (bokami lub rogami).
 *Przykład: Jeśli widzisz cyfrę 1, oznacza to, że na polach dookoła niej (maksymalnie 8 sąsiadów) ukryta jest tylko jedna mina.*
+
+**Puste pole** oznacza, że wokół niego nie znajduje się żadna mina.
 
 Celem gry jest odsłonięcie wszystkich pól na planszy które **nie zawierają min** oraz oznakowanie **flagami** pól minowych.
 
