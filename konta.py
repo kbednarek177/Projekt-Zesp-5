@@ -48,6 +48,8 @@ def zaloz_konto(wczytane_dane, nazwa, haslo_nieszyfr):    ## zakładanie konta. 
 
 def sprawdz_haslo(nazwa, haslo, nazwy_hasla):   ## sprawdzanie hasla 
     haslo_shaszowane = hasz(haslo)
+    if(nazwa not in nazwy_hasla):
+        return False
     if(nazwy_hasla[nazwa] == haslo_shaszowane):
         return True
     return False
@@ -60,6 +62,9 @@ def zaloguj(nazwa, haslo, nazwy_hasla):
     return int(-1)
         
 
+def usun_konto(nazwa, tablica_dane):
+    for i in tablica_dane:
+        del i[nazwa]
 
 ## funkcje zwiazane z najlepszymi wynikami (korzystajace z T[1])
 
