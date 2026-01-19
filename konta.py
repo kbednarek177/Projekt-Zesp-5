@@ -220,7 +220,7 @@ def str_ll_przetlumacz(napis):
         else:
             temp.append(-int(napis[i+1]))
             i = i + 1
-        if((len(temp) == int(rozmiar)):
+        if(len(temp) == int(rozmiar)):
             wynik.append(temp)
             temp = []
         i = i + 1
