@@ -665,20 +665,20 @@ def menu_glowne(stdscr):
                 liczba_flag = 10
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag, "l", czas, login=login, czy_zalogowano=czy_zalogowano) # czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag, "l", login=login, czy_zalogowano=czy_zalogowano) # czy_zalogowano
 
             elif wybrana_opcja == poziomy[1]:
                 szer, wys, bomby = 11,11,18
                 liczba_flag = 18
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag, "s", czas, login=login, czy_zalogowano=czy_zalogowano) # czas = 0, czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag, "s", login=login, czy_zalogowano=czy_zalogowano) # czas = 0, czy_zalogowano
 
             elif wybrana_opcja == poziomy[2]:
                 szer, wys, bomby = 13,13,35
                 liczba_flag = 35
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag, "t", czas, login=login, czy_zalogowano=czy_zalogowano) # czas = 0, czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag, "t", login=login, czy_zalogowano=czy_zalogowano) # czas = 0, czy_zalogowano
 
 wrapper(menu_glowne)
