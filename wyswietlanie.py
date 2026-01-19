@@ -247,7 +247,7 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
 
         elif klawisz == 'z' or klawisz == 'Z':
             if czy_zalogowano == True:
-                konta.zapisz(login, plansza.tablica, plansza.wyswietlana, liczba_flag, czas, nazwy_zapis_num=konta.tablice_dane[2], nazwy_zapis_pola=konta.tablica_dane[3], nazwy_zapis_czas=konta.tablica_dane[4])
+                konta.zapisz(login, plansza.tablica, plansza.wyswietlana, liczba_flag, czas, nazwy_zapis_num=konta.tablica_dane[2], nazwy_zapis_pola=konta.tablica_dane[3], nazwy_zapis_czas=konta.tablica_dane[4])
                 konta.nadpisz_plik(konta.tablica_dane, konta.dane)
                 okno_informacyjne(stdscr, "ZAPIS", "Zapisano rozgrywkę")
 
@@ -276,6 +276,7 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
                 wynik = 1
                 if czy_zalogowano:
                     konta.naj_wynik(czas,poziom,login,konta.tablica_dane[1])
+                    konta.nadpisz_plik(konta.tablica_dane, konta.dane)
             if wynik == 2:
                 boompozycja = pozycja
             # jesli wygrana lub przegrana to przerwie petle gry
@@ -652,20 +653,20 @@ def menu_glowne(stdscr):
                 liczba_flag = 10
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag, "l") # czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag, "l", czy_zalogowano=czy_zalogowano) # czy_zalogowano
 
             elif wybrana_opcja == poziomy[1]:
                 szer, wys, bomby = 11,11,18
                 liczba_flag = 18
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag, "s") # czas = 0, czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag, "s", czy_zalogowano=czy_zalogowano) # czas = 0, czy_zalogowano
 
             elif wybrana_opcja == poziomy[2]:
                 szer, wys, bomby = 13,13,35
                 liczba_flag = 35
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag, "t") # czas = 0, czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag, "t", czy_zalogowano=czy_zalogowano) # czas = 0, czy_zalogowano
 
 wrapper(menu_glowne)
