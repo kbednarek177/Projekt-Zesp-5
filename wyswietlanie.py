@@ -592,7 +592,7 @@ def menu_glowne(stdscr):
             elif wybrana_opcja == 'Wczytaj Gre':
 
                 if czy_zalogowano:
-                    t1, t2, czas, liczba_flag = konta.wczytaj(login, konta.tablica_dane[2], konta.tablica_dane[3], konta.tablica_dane[4])
+                    t1, t2, liczba_flag, czas = konta.wczytaj(login, konta.tablica_dane[2], konta.tablica_dane[3], konta.tablica_dane[4])
 
                     wys, szer = len(t1), len(t1[0])
                     poziom=""
