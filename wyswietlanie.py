@@ -657,7 +657,6 @@ def menu_glowne(stdscr):
                 okno_informacyjne(stdscr, "WCZYTYWANIE", "Funkcja w budowie...")
 
             elif wybrana_opcja == 'Ranking':
-                okno_informacyjne(stdscr, "RANKING", "1. Agatka: 1 000 000 punktow :3")
                 wyswietl_ranking(stdscr, tablica_dane)
 
             elif wybrana_opcja == poziomy[0]:
