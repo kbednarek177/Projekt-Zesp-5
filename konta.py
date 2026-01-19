@@ -207,7 +207,7 @@ def str_ll_przetlumacz(napis):
     
     dl_rozmiar = int(napis[0])
     
-    rozmiar = napis[0:dl_rozmiar]
+    rozmiar = napis[1:dl_rozmiar+1]
     wynik = []
     temp = []
     
