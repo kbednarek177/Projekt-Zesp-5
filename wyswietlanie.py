@@ -1,11 +1,11 @@
 import time
 import curses
+from konta import tablica_dane, directory, tablica_wynikow, nadpisz_plik, zapisz, zaloz_konto, zaloguj, czy_wolna, \
+    sprawdz_haslo, usun_konto, naj_wynik, dane, wczytaj
 from curses import wrapper
-
-from konta import tablica_dane
 from saper import generowanie, odkrywanie, postaw_flage, wygrana, Plansza
 from curses.textpad import Textbox
-import konta
+
 
 # from konta import zapisz #aktualnie nie istnieje
 
@@ -247,8 +247,8 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
 
         elif klawisz == 'z' or klawisz == 'Z':
             if czy_zalogowano == True:
-                konta.zapisz(login, plansza.tablica, plansza.wyswietlana, liczba_flag, czas, nazwy_zapis_num=konta.tablica_dane[2], nazwy_zapis_pola=konta.tablica_dane[3], nazwy_zapis_czas=konta.tablica_dane[4])
-                konta.nadpisz_plik(konta.tablica_dane, konta.dane)
+                zapisz(login, plansza.tablica, plansza.wyswietlana, liczba_flag, czas, nazwy_zapis_num=tablica_dane[2], nazwy_zapis_pola=tablica_dane[3], nazwy_zapis_czas=tablica_dane[4])
+                nadpisz_plik(tablica_dane, dane)
                 okno_informacyjne(stdscr, "ZAPIS", "Zapisano rozgrywkę")
 
 
@@ -275,8 +275,8 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
             if wynik == 0 and wygrana(plansza): 
                 wynik = 1
                 if czy_zalogowano:
-                    konta.naj_wynik(czas,poziom,login,konta.tablica_dane[1])
-                    konta.nadpisz_plik(konta.tablica_dane, konta.dane)
+                    naj_wynik(czas,poziom,login,tablica_dane[1])
+                    nadpisz_plik(tablica_dane, dane)
             if wynik == 2:
                 boompozycja = pozycja
             # jesli wygrana lub przegrana to przerwie petle gry
@@ -325,7 +325,7 @@ def okno_logowania(stdscr):
         textbox_login = Textbox(okno_na_login)
         login = textbox_login.edit().strip()
 
-        if konta.czy_wolna(login, tablica_dane[0]):
+        if czy_wolna(login, tablica_dane[0]):
             okno.addstr(3, 1, "NIE MA TAKIEGO LOGINU!", curses.A_BOLD | Blad)
             okno.refresh()
         else:   #wymazanie komunikatu
@@ -350,7 +350,7 @@ def okno_logowania(stdscr):
         textbox_haslo = Textbox(okno_na_haslo)
         haslo = textbox_haslo.edit().strip()
 
-        if not konta.sprawdz_haslo(login, haslo, tablica_dane[0]):
+        if not sprawdz_haslo(login, haslo, tablica_dane[0]):
             okno.addstr(3, 1, "ZŁE HASŁO!", curses.A_BOLD | Blad)
             okno.refresh()
             time.sleep(1)
@@ -391,7 +391,7 @@ def okno_tworzenia_konta(stdscr):
         textbox_login = Textbox(okno_na_login)
         nowy_login = textbox_login.edit().strip()
 
-        if not konta.czy_wolna(nowy_login, tablica_dane[0]):
+        if not czy_wolna(nowy_login, tablica_dane[0]):
             okno.addstr(4, 1, "LOGIN ZAJĘTY!", curses.A_BOLD | Blad)
             okno.refresh()
         else:   #wymazanie komunikatu
@@ -462,7 +462,7 @@ def czy_na_pewno_usun(stdscr): #POTWIERDZENIE ZAMKNIĘCIA KONTA
 def logowanie_interfejs(stdscr):
 
     login, haslo= okno_logowania(stdscr) #funkcja zwraca podane przez użytkownika dane
-    if konta.zaloguj(login, haslo, tablica_dane[0]) != -1:
+    if zaloguj(login, haslo, tablica_dane[0]) != -1:
         okno_informacyjne(stdscr, "LOGOWANIE", "Udalo sie zalogowac!")
         return login
     else:
@@ -474,9 +474,9 @@ def tworzenie_konta_interfejs(stdscr):
 
     login, haslo = okno_tworzenia_konta(stdscr) #Tutaj użytkownik tworzy login i hasło
 
-    if konta.czy_wolna(login, tablica_dane[0]):
-        konta.zaloz_konto(tablica_dane, login, haslo)
-        konta.nadpisz_plik(tablica_dane, konta.dane)
+    if czy_wolna(login, tablica_dane[0]):
+        zaloz_konto(tablica_dane, login, haslo)
+        nadpisz_plik(tablica_dane, dane)
         okno_informacyjne(stdscr, "TWORZENIE KONTA", "Konto utworzone!")
         return login
     else:
@@ -493,21 +493,33 @@ def usuwanie_konta_interfejs(stdscr): #ZWRACA T JEŚLI UŻYTKOWNIK POTWIERDZI US
         okno_informacyjne(stdscr, "USUWANIE KONTA", "Anulowano")
         return False
 
-def wyswietl_ranking(stdscr, wynik):
-    stdscr.clear()
-    h, w =stdscr.getmaxyx()
 
-    tytul = "RANKING"
-    stdscr.addstr(1, w//2 - len(tytul)//2, tytul, curses.A_BOLD)
+def wyswietl_ranking(stdscr, tablica_dane):
+
+    stdscr.clear()
+    h, w = stdscr.getmaxyx()
+
+    # Pobierz ranking z funkcji tablica_wynikow
+    nazwy_wynik = tablica_dane[1]
+    wynik = tablica_wynikow(nazwy_wynik)
 
     poziomy = ["ŁATWY", "ŚREDNI", "TRUDNY"]
 
     for p in range(3):
-        stdscr.addstr(3 + p*4, 2, poziomy[p] + ":", curses.A_BOLD)
-        for i in range(2):
-            wynik_do_wypisania = wynik[p*2 + i]
-            stdscr.addstr(4 + p*4 + i, 4, f"{i+1}. {wynik}")
+        stdscr.addstr(3 + p * 4, 2, poziomy[p] + ":", curses.A_BOLD)  #wyświetla nazwy poziomów
 
+        for i in range(2):   # po dwa wyniki na poziom
+            wynik_str = wynik[p * 2 + i]
+            podziel = wynik_str.split("-", 1)
+            czas = podziel[0]
+            login = podziel[1]
+
+            if czas == "-1":
+                wynik_do_wypisania = f"{i + 1}. Brak wyniku"
+            else:
+                wynik_do_wypisania = f"{i + 1}. {login}: {czas}s"
+
+            stdscr.addstr(4 + p * 4 + i, 4, wynik_do_wypisania)
 
     stdscr.refresh()
     stdscr.getch()
@@ -592,7 +604,7 @@ def menu_glowne(stdscr):
             elif wybrana_opcja == 'Wczytaj Gre':
 
                 if czy_zalogowano:
-                    t1, t2, liczba_flag, czas = konta.wczytaj(login, konta.tablica_dane[2], konta.tablica_dane[3], konta.tablica_dane[4])
+                    t1, t2, liczba_flag, czas = wczytaj(login, tablica_dane[2], tablica_dane[3], tablica_dane[4])
 
                     wys, szer = len(t1), len(t1[0])
                     poziom=""
@@ -607,7 +619,7 @@ def menu_glowne(stdscr):
                     plansza.tablica = t1
                     plansza.wyswietlana = t2
 
-                    rozgrywka(stdscr, plansza, liczba_flag, czas, poziom, login=login, czy_zalogowano=czy_zalogowano)
+                    rozgrywka(stdscr, plansza, liczba_flag, poziom, czas, login=login, czy_zalogowano=czy_zalogowano)
 
                 else:
                     okno_informacyjne(stdscr, "WCZYTYWANIE", "Musisz być zalogowany!")
@@ -637,7 +649,7 @@ def menu_glowne(stdscr):
 
             elif wybrana_opcja == 'Usun Konto':
                 if usuwanie_konta_interfejs(stdscr): # interfejs (czy na pewno chcesz usnac konto? Tak/Nie + trzeba wyrzucic to konto z pliku ...)
-                    konta.usun_konto(login, tablica_dane)
+                    usun_konto(login, tablica_dane)
                     czy_zalogowano = False
                     obecny_rzad = 0
 
@@ -646,27 +658,27 @@ def menu_glowne(stdscr):
 
             elif wybrana_opcja == 'Ranking':
                 okno_informacyjne(stdscr, "RANKING", "1. Agatka: 1 000 000 punktow :3")
-                curses.wrapper(wyswietl_ranking, konta.tablica_wynikow(tablica_dane[1]))
+                wyswietl_ranking(stdscr, tablica_dane)
 
             elif wybrana_opcja == poziomy[0]:
                 szer, wys, bomby = 9,9,10
                 liczba_flag = 10
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag, "l", czy_zalogowano=czy_zalogowano) # czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag, "l", czas, login=login, czy_zalogowano=czy_zalogowano) # czy_zalogowano
 
             elif wybrana_opcja == poziomy[1]:
                 szer, wys, bomby = 11,11,18
                 liczba_flag = 18
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag, "s", czy_zalogowano=czy_zalogowano) # czas = 0, czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag, "s", czas, login=login, czy_zalogowano=czy_zalogowano) # czas = 0, czy_zalogowano
 
             elif wybrana_opcja == poziomy[2]:
                 szer, wys, bomby = 13,13,35
                 liczba_flag = 35
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag, "t", czy_zalogowano=czy_zalogowano) # czas = 0, czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag, "t", czas, login=login, czy_zalogowano=czy_zalogowano) # czas = 0, czy_zalogowano
 
 wrapper(menu_glowne)
