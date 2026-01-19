@@ -213,16 +213,17 @@ def str_ll_przetlumacz(napis):
     
     wynik = []
     temp = []
-    
-    for i in range(1,len(napis)):
+    i = dl_rozmiar+1
+    while (i < len(napis)):
         if(napis[i] != '-'):
             temp.append(int(napis[i]))
         else:
             temp.append(-int(napis[i+1]))
-        if(i % int(rozmiar) == 0):
+            i = i + 1
+        if(len(temp) == int(rozmiar)):
             wynik.append(temp)
             temp = []
-            
+        i = i + 1
     return wynik
     
 
