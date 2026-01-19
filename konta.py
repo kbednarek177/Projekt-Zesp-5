@@ -205,7 +205,11 @@ def wyniki(nazwa, nazwy_wynik):
 
 def str_ll_przetlumacz(napis):
     
-    rozmiar = napis[0]
+    dl_rozmiar = int(napis[0])
+    
+    rozmiar = napis[0:dl_rozmiar]
+    wynik = []
+    temp = []
     
     wynik = []
     temp = []
@@ -223,6 +227,11 @@ def ll_str_przetlumacz(lista):
     ## bierze długość listy i daje na początek
     wynik = ""
     rozmiar = len(lista)
+    
+    if(rozmiar <10):
+        wynik =  wynik + '1'
+    else:
+        wynik = wynik + '2'
     wynik = wynik + str(rozmiar)
     
     ##wczytuje elementy z list 
