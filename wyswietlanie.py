@@ -9,7 +9,7 @@ import konta
 
 # from konta import zapisz #aktualnie nie istnieje
 
-def rozgrywka(stdscr, plansza, liczba_flag, czas=0, login=None, czy_zalogowano=False):
+def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalogowano=False):
     wysokosc_ekranu, szerokosc_ekranu = stdscr.getmaxyx()   # pobieranie wymiarow ekranu, zeby wiedziec gdzie jest "prawy gorny rog"
     klawisze_ruchu = {"w", "a", "s", "d", "W", "A", "S", "D", "KEY_UP", "KEY_DOWN", "KEY_LEFT", "KEY_RIGHT"}
 
@@ -274,6 +274,8 @@ def rozgrywka(stdscr, plansza, liczba_flag, czas=0, login=None, czy_zalogowano=F
             wynik, liczba_flag = odkrywanie(pozycja, plansza, liczba_flag)
             if wynik == 0 and wygrana(plansza): 
                 wynik = 1
+                if czy_zalogowano:
+                    konta.naj_wynik(czas,poziom,login,konta.tablica_dane[1])
             if wynik == 2:
                 boompozycja = pozycja
             # jesli wygrana lub przegrana to przerwie petle gry
@@ -499,7 +501,7 @@ def wyswietl_ranking(stdscr, wynik):
 
     poziomy = ["ŁATWY", "ŚREDNI", "TRUDNY"]
 
-    for poziom in range(3):
+    for p in range(3):
         stdscr.addstr(3 + p*4, 2, poziomy[p] + ":", curses.A_BOLD)
         for i in range(2):
             wynik_do_wypisania = wynik[p*2 + i]
@@ -592,12 +594,19 @@ def menu_glowne(stdscr):
                     t1, t2, czas, liczba_flag = konta.wczytaj(login, konta.tablica_dane[2], konta.tablica_dane[3], konta.tablica_dane[4])
 
                     wys, szer = len(t1), len(t1[0])
+                    poziom=""
+                    if szer == 9:
+                        poziom = "l"
+                    elif szer == 11:
+                        poziom = "s"
+                    elif szer == 13:
+                        poziom = "t"
 
                     plansza = Plansza(szer, wys, 99) #nie przechowujemy liczby bomb, chyba zbędne
                     plansza.tablica = t1
                     plansza.wyswietlana = t2
 
-                    rozgrywka(stdscr, plansza, liczba_flag, czas, login=login, czy_zalogowano=czy_zalogowano)
+                    rozgrywka(stdscr, plansza, liczba_flag, czas, poziom, login=login, czy_zalogowano=czy_zalogowano)
 
                 else:
                     okno_informacyjne(stdscr, "WCZYTYWANIE", "Musisz być zalogowany!")
@@ -643,20 +652,20 @@ def menu_glowne(stdscr):
                 liczba_flag = 10
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag) # czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag, "l") # czy_zalogowano
 
             elif wybrana_opcja == poziomy[1]:
                 szer, wys, bomby = 11,11,18
                 liczba_flag = 18
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag) # czas = 0, czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag, "s") # czas = 0, czy_zalogowano
 
             elif wybrana_opcja == poziomy[2]:
                 szer, wys, bomby = 13,13,35
                 liczba_flag = 35
                 plansza = Plansza(szer,wys,bomby)
                 generowanie(plansza)
-                rozgrywka(stdscr, plansza, liczba_flag) # czas = 0, czy_zalogowano
+                rozgrywka(stdscr, plansza, liczba_flag, "t") # czas = 0, czy_zalogowano
 
 wrapper(menu_glowne)
