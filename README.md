@@ -63,7 +63,7 @@ Po programie użytkownik porusza się klawiaturą:
 Do poprawnego działania programu należy pobrać:
 * bibliotekę **curses** `pip install windows-curses` (powinna być wbudowana w Pythona na systemach Linux i MacOC)
 
-### Uwaga!:
+### Uwaga:
 Zbyt małe okno terminala może powodować błędy w wyświetlaniu i niepoprawne działanie programu.
 W przypadku gdy program nie odpowiada, zalecane jest użycie skrótu `CTRL+C`.
 
