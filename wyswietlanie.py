@@ -71,9 +71,6 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
 
     stdscr.erase()
     stdscr.refresh()
- 
-
-    start = time.time() - czas
     
     # boki pojedynczego pola
     bokx = 3 
@@ -97,21 +94,31 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
     pozycja = (0,0)  #(x = kolumna, y = wiersz)
     wynik = 0
 
+    #ZEGAR:
+    czas_startu = time.time() - czas
+    poprzedni_czas = -1
+    pauza = 0
 
     while True:     # tutaj trzeba pracowac nad wyswietlaniem planszy 
             
         # ZEGAR:
-        zegar.erase()
+        teraz = time.time() - pauza
+        czas = int(teraz - czas_startu)
 
-        sekundy = czas % 60          
-        wszystkie_minuty = czas // 60 
+        if czas != poprzedni_czas:
 
-        minuty = wszystkie_minuty % 60      
-        godziny = wszystkie_minuty // 60
-        
-        zegar.addstr(f"Czas gry: {godziny:02}:{minuty:02}:{sekundy:02}")    # wyswietlanie czasu w formacie 00:00:00
+            zegar.erase()
 
-        zegar.refresh()
+            sekundy = czas % 60          
+            wszystkie_minuty = czas // 60 
+
+            minuty = wszystkie_minuty % 60      
+            godziny = wszystkie_minuty // 60
+            
+            zegar.addstr(f"Czas gry: {godziny:02}:{minuty:02}:{sekundy:02}")    # wyswietlanie czasu w formacie 00:00:00
+
+            zegar.refresh()
+            poprzedni_czas = czas
 
         # FLAGI:
         okno_flagi.erase()
@@ -247,12 +254,6 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
             stdscr.getch()        
             stdscr.nodelay(True)
             break
-
-
-        # AKTUALIZOWANIE WSZYSTKIEGO I ODCZYTYWANIE POSUNIEC UZYTOWNIKA
-        if time.time() - start >= 1:
-            czas = czas + 1
-            start = time.time()
        
 
         #STEROWANIE
@@ -262,9 +263,12 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
 
         elif klawisz == 'z' or klawisz == 'Z':
             if czy_zalogowano == True:
+                tmp = time.time()
                 zapisz(login, plansza.tablica, plansza.wyswietlana, liczba_flag, czas, nazwy_zapis_num=tablica_dane[2], nazwy_zapis_pola=tablica_dane[3], nazwy_zapis_czas=tablica_dane[4])
                 nadpisz_plik(tablica_dane, dane)
                 okno_informacyjne(stdscr, "ZAPIS", "Zapisano rozgrywkę")
+                pauza += (time.time() - tmp)
+
 
 
         # PORUSZANIE SIE
@@ -322,6 +326,8 @@ def okno_informacyjne(stdscr, tytul, wiadomosc): # proste okno, czeka na input
     stdscr.nodelay(False) 
     stdscr.getch()        
     stdscr.nodelay(True)
+    okno.erase()
+    okno.refresh()
 
 
 def wyswietl_zasady(stdscr):
