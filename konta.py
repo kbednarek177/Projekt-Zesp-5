@@ -205,17 +205,27 @@ def wyniki(nazwa, nazwy_wynik):
 
 def str_ll_przetlumacz(napis):
     
-    rozmiar = napis[0]
+    dl_rozmiar = int(napis[0])
     
+    rozmiar = napis[1:dl_rozmiar+1]
     wynik = []
     temp = []
     
-    for i in range(1,len(napis)):
-        temp.append(int(napis[i]))
-        if(i % int(rozmiar) == 0):
+    wynik = []
+    temp = []
+    i = dl_rozmiar+1
+    while (i < len(napis)):
+        if(napis[i] != '-' and napis[i] != 'f'):
+            temp.append(int(napis[i]))
+        elif(napis[i] == '-'):
+            temp.append(-int(napis[i+1]))
+            i = i + 1
+        elif(napis[i] == 'f'):
+            temp.append(10)
+        if(len(temp) == int(rozmiar)):
             wynik.append(temp)
             temp = []
-            
+        i = i + 1
     return wynik
     
 
@@ -223,6 +233,11 @@ def ll_str_przetlumacz(lista):
     ## bierze długość listy i daje na początek
     wynik = ""
     rozmiar = len(lista)
+    
+    if(rozmiar <10):
+        wynik =  wynik + '1'
+    else:
+        wynik = wynik + '2'
     wynik = wynik + str(rozmiar)
     
     ##wczytuje elementy z list 
@@ -233,6 +248,25 @@ def ll_str_przetlumacz(lista):
     
     return wynik
 
+def usun_zapis(nazwa, tablica):
+    tablica[2][nazwa] = "000"
+    tablica[3][nazwa] = "000"
+    tablica[4][nazwa] = 0
+
+def usun_dz(lista):
+    lista1 = []
+    temp = []
+    for x in lista:
+        for y in x:
+            if(y == 10):
+                temp.append('f')
+            else:
+                temp.append(y)
+        lista1.append(temp)
+        temp = []
+                
+    return lista1
+
 
         ## nazwa, og plansza, plansza z odkrytymi polami, pozostałe flagi, czas, zapisane_dane[2], zapisane_dane[3], zapisane_dane[4]
 def zapisz(nazwa, numery, pola, poz_flagi, czas, nazwy_zapis_num, nazwy_zapis_pola, nazwy_zapis_czas):
@@ -242,12 +276,16 @@ def zapisz(nazwa, numery, pola, poz_flagi, czas, nazwy_zapis_num, nazwy_zapis_po
         e_poz_flagi = '0' + e_poz_flagi
     
     nazwy_zapis_num[nazwa] = e_poz_flagi + ll_str_przetlumacz(numery)
-    nazwy_zapis_pola[nazwa] = e_poz_flagi + ll_str_przetlumacz(pola)
+    nazwy_zapis_pola[nazwa] = e_poz_flagi + ll_str_przetlumacz(usun_dz(pola))
     nazwy_zapis_czas[nazwa] = str(czas)
     
     
         ##  nazwa, zapisane_dane[2], zapisane_dane[3], zapisane_dane[4]
 def wczytaj(nazwa, nazwy_zapis_num, nazwy_zapis_pola, nazwy_zapis_czas):
+    if(len(nazwy_zapis_num) == 3):
+        t = [0]
+        
+        return t
     poz_flagi = int(nazwy_zapis_num[nazwa][:2])
     numery = str_ll_przetlumacz(nazwy_zapis_num[nazwa][2:])
     pola = str_ll_przetlumacz(nazwy_zapis_pola[nazwa][2:])
