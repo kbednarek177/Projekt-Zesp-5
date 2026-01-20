@@ -248,6 +248,11 @@ def ll_str_przetlumacz(lista):
     
     return wynik
 
+def usun_zapis(nazwa, tablica):
+    tablica[2][nazwa] = "000"
+    tablica[3][nazwa] = "000"
+    tablica[4][nazwa] = 0
+
 def usun_dz(lista):
     lista1 = []
     temp = []
@@ -277,6 +282,10 @@ def zapisz(nazwa, numery, pola, poz_flagi, czas, nazwy_zapis_num, nazwy_zapis_po
     
         ##  nazwa, zapisane_dane[2], zapisane_dane[3], zapisane_dane[4]
 def wczytaj(nazwa, nazwy_zapis_num, nazwy_zapis_pola, nazwy_zapis_czas):
+    if(len(nazwy_zapis_num) == 3):
+        t = [0]
+        
+        return t
     poz_flagi = int(nazwy_zapis_num[nazwa][:2])
     numery = str_ll_przetlumacz(nazwy_zapis_num[nazwa][2:])
     pola = str_ll_przetlumacz(nazwy_zapis_pola[nazwa][2:])
