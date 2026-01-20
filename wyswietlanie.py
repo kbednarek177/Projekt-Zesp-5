@@ -498,15 +498,17 @@ def wyswietl_ranking(stdscr, tablica_dane):
 
     stdscr.clear()
     h, w = stdscr.getmaxyx()
+    okno = curses.newwin(16 , 50, h//2 - 10, w//2 - 25)
+    okno.box()
 
-    # Pobierz ranking z funkcji tablica_wynikow
+    # Pobiera ranking z funkcji tablica_wynikow
     nazwy_wynik = tablica_dane[1]
     wynik = tablica_wynikow(nazwy_wynik)
 
     poziomy = ["ŁATWY", "ŚREDNI", "TRUDNY"]
 
     for p in range(3):
-        stdscr.addstr(3 + p * 4, 2, poziomy[p] + ":", curses.A_BOLD)  #wyświetla nazwy poziomów
+        okno.addstr(3 + p * 4, 2, poziomy[p] + ":", curses.A_BOLD)  #wyświetla nazwy poziomów
 
         for i in range(2):   # po dwa wyniki na poziom
             wynik_str = wynik[p * 2 + i]
@@ -519,10 +521,13 @@ def wyswietl_ranking(stdscr, tablica_dane):
             else:
                 wynik_do_wypisania = f"{i + 1}. {login}: {czas}s"
 
-            stdscr.addstr(4 + p * 4 + i, 4, wynik_do_wypisania)
+            okno.addstr(4 + p * 4 + i, 4, wynik_do_wypisania)
 
-    stdscr.refresh()
+    okno.refresh()
+
+    stdscr.nodelay(False)  #Żeby nie zamykało okna od razu
     stdscr.getch()
+    stdscr.nodelay(True)
 
 def menu_glowne(stdscr):
     curses.curs_set(0)  # niech kursor sie nie wyswietla
@@ -623,6 +628,7 @@ def menu_glowne(stdscr):
 
                 else:
                     okno_informacyjne(stdscr, "WCZYTYWANIE", "Musisz być zalogowany!")
+                    stdscr.clear()   #wraca do menu
             
             elif wybrana_opcja == 'Zasady Gry':
                 okno_informacyjne(stdscr, "ZASADY", "Unikaj bomb...") 
