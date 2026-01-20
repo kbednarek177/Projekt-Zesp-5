@@ -292,12 +292,69 @@ def okno_informacyjne(stdscr, tytul, wiadomosc): # proste okno, czeka na input
     
     okno.addstr(1, 2, tytul, curses.A_BOLD)
     okno.addstr(2, 2, wiadomosc)
-    okno.addstr(3, 2, "Nacisnij dowolny klawisz aby wyjsc :3", curses.A_DIM)
+    okno.addstr(3, 2, "Nacisnij dowolny klawisz aby wyjsc", curses.A_DIM)
     okno.refresh()
     
     stdscr.nodelay(False) 
     stdscr.getch()        
     stdscr.nodelay(True)
+
+
+def wyswietl_zasady(stdscr):
+    # Lista krotek ... dlugich krotek niestety
+    tresc = [
+        ("ZASADY GRY", curses.A_BOLD | curses.COLOR_GREEN),
+        ("", 0),
+        ("[F] - postawienie flagi", 0),
+        ("[Q] - powrot do wyboru poziomu", 0),
+        ("[E] - odkrycie pola", 0),
+        ("[Z] - zapisanie gry (gdy zalogowano)", 0),
+        ("[W][A][S][D] / strzalki - ruch", 0),
+        ("", 0),
+        ("Pola sa trzech typow:", 0),
+        ("1. Cyfry, 2. Puste, 3. Miny", 0),
+        ("", 0),
+        ("Odkrycie miny oznacza PRZEGRANA.", curses.A_BOLD),
+        ("Cyfra mowi ile min styka sie z polem.", 0),
+        ("(maksymalnie 8 sasiadow).", 0),
+        ("Puste pole oznacza brak min wokol.", 0),
+        ("", 0),
+        ("Celem gry jest odkrycie wszystkich pol BEZ min.", 0),
+        ("Stawianie flag sluzy do oznaczania min.", 0)
+    ]
+
+    while True:
+        stdscr.erase()
+        max_h, max_w = stdscr.getmaxyx()
+        
+        # oblicz wymairy okna - bierze najdluzsza linijke i liczy ...
+        h = len(tresc) + 4
+        w = max(len(t[0]) for t in tresc) + 6
+        
+        y = max(0, (max_h - h) // 2)
+        x = max(0, (max_w - w) // 2)
+
+        try:
+            okno = curses.newwin(h, w, y, x)
+            okno.box()
+            
+            for i, (linia, atrybut) in enumerate(tresc):
+                # centrowanie tekstu wewnatrz ramki
+                pos_x = (w - len(linia)) // 2
+                okno.addstr(i + 2, pos_x, linia, atrybut)
+                
+            stopka = "[ nacisnij dowolny klawisz aby wyjsc ]"
+            okno.addstr(h - 1, (w - len(stopka)) // 2, stopka, curses.A_DIM)
+            okno.refresh()
+
+        except curses.error:
+            pass # ignoruj bledy - np ekran jest za maly ...
+
+        stdscr.nodelay(False) 
+        okno.getch()      
+        stdscr.nodelay(True)
+        break  
+
 
 def okno_logowania(stdscr):
 
@@ -305,7 +362,7 @@ def okno_logowania(stdscr):
     okno = curses.newwin(5, 60, h // 2 - 2, w // 2 - 30)
     okno.box()
 
-    curses.init_pair(17, curses.COLOR_RED, curses.COLOR_BLACK)  #nowy kolor do wyświetlania komunikatów o błędach
+    curses.init_pair(17, curses.COLOR_RED, curses.COLOR_BLACK)  #nowy kolor do wyswietlania komunikatow o bledach
     Blad = curses.color_pair(17)
 
     # Login
@@ -496,7 +553,7 @@ def usuwanie_konta_interfejs(stdscr): #ZWRACA T JEŚLI UŻYTKOWNIK POTWIERDZI US
 
 def wyswietl_ranking(stdscr, tablica_dane):
 
-    stdscr.clear()
+    stdscr.erase()
     h, w = stdscr.getmaxyx()
     okno = curses.newwin(16 , 50, h//2 - 10, w//2 - 25)
     okno.box()
@@ -505,10 +562,10 @@ def wyswietl_ranking(stdscr, tablica_dane):
     nazwy_wynik = tablica_dane[1]
     wynik = tablica_wynikow(nazwy_wynik)
 
-    poziomy = ["ŁATWY", "ŚREDNI", "TRUDNY"]
+    poziomy = ["LATWY", "SREDNI", "TRUDNY"]
 
     for p in range(3):
-        okno.addstr(3 + p * 4, 2, poziomy[p] + ":", curses.A_BOLD)  #wyświetla nazwy poziomów
+        okno.addstr(3 + p * 4, 2, poziomy[p] + ":", curses.A_BOLD)  # wyswietla nazwy poziomow
 
         for i in range(2):   # po dwa wyniki na poziom
             wynik_str = wynik[p * 2 + i]
@@ -526,8 +583,9 @@ def wyswietl_ranking(stdscr, tablica_dane):
     okno.refresh()
 
     stdscr.nodelay(False)  #Żeby nie zamykało okna od razu
-    stdscr.getch()
+    okno.getch()
     stdscr.nodelay(True)
+
 
 def menu_glowne(stdscr):
     curses.curs_set(0)  # niech kursor sie nie wyswietla
@@ -594,7 +652,7 @@ def menu_glowne(stdscr):
                 iterator = 0
                 obecny_rzad = 0
             
-        elif klawisz == '\n':
+        elif klawisz == '\n' or klawisz == 'KEY_ENTER':
             wybrana_opcja = ekran[iterator][obecny_rzad]
             
             if wybrana_opcja == 'Wyjscie':
@@ -609,30 +667,32 @@ def menu_glowne(stdscr):
             elif wybrana_opcja == 'Wczytaj Gre':
 
                 if czy_zalogowano:
-                    t1, t2, liczba_flag, czas = wczytaj(login, tablica_dane[2], tablica_dane[3], tablica_dane[4])
+                    try:
+                        t1, t2, liczba_flag, czas = wczytaj(login, tablica_dane[2], tablica_dane[3], tablica_dane[4])
 
-                    wys, szer = len(t1), len(t1[0])
-                    poziom=""
-                    if szer == 9:
-                        poziom = "l"
-                    elif szer == 11:
-                        poziom = "s"
-                    elif szer == 13:
-                        poziom = "t"
+                        wys, szer = len(t1), len(t1[0])
+                        poziom=""
+                        if szer == 9:
+                            poziom = "l"
+                        elif szer == 11:
+                            poziom = "s"
+                        elif szer == 13:
+                            poziom = "t"
 
-                    plansza = Plansza(szer, wys, 99) #nie przechowujemy liczby bomb, chyba zbędne
-                    plansza.tablica = t1
-                    plansza.wyswietlana = t2
+                        plansza = Plansza(szer, wys, 99) # nie przechowujemy liczby bomb, chyba zbedne
+                        plansza.tablica = t1
+                        plansza.wyswietlana = t2
 
-                    rozgrywka(stdscr, plansza, liczba_flag, poziom, czas, login=login, czy_zalogowano=czy_zalogowano)
+                        rozgrywka(stdscr, plansza, liczba_flag, poziom, czas, login=login, czy_zalogowano=czy_zalogowano)
+                    except Exception as e:
+                         okno_informacyjne(stdscr, "BLAD", "Nie udalo sie wczytac gry.")
 
                 else:
-                    okno_informacyjne(stdscr, "WCZYTYWANIE", "Musisz być zalogowany!")
+                    okno_informacyjne(stdscr, "WCZYTYWANIE", "Musisz byc zalogowany!")
                     stdscr.clear()   #wraca do menu
             
             elif wybrana_opcja == 'Zasady Gry':
-                okno_informacyjne(stdscr, "ZASADY", "Unikaj bomb...") 
-                # Zrobic nowego windowa lub pada na zasady, ktore trzeba w README.md uzupelnic
+                wyswietl_zasady(stdscr)
             
             elif wybrana_opcja == 'Zaloguj':
                 login_zalogowanego = logowanie_interfejs(stdscr)
