@@ -109,11 +109,11 @@ def znajdz_naj(w, nazwy):
                     tasma = tasma - 1
                     
         if(len(wynik) < 2):
-            wynik.append("-1-wolnemiejsce")
+            wynik.append("-")
             
     if(len(wartosci) == 0):
-        wynik.append("-1-wolnemiejsce")
-        wynik.append("-1-wolnemiejsce")
+        wynik.append("-")
+        wynik.append("-")
     
     return wynik
 
