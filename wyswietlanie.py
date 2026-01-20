@@ -6,8 +6,23 @@ from curses import wrapper
 from saper import generowanie, odkrywanie, postaw_flage, wygrana, Plansza
 from curses.textpad import Textbox
 
-
 # from konta import zapisz #aktualnie nie istnieje
+
+def czy_pierwszy_ruch(plansza, pozycja):    #funckja sprawdza, czy to pierwszy ruch użytkownika
+
+    for i in range(plansza.wysokosc):
+
+        for j in range(plansza.szerokosc):
+
+            if plansza.wyswietlana[i][j] != 9:
+
+                return False
+
+    if plansza.tablica[pozycja[1]][pozycja[0]] == 0:
+
+        return False
+
+    return True
 
 def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalogowano=False):
     wysokosc_ekranu, szerokosc_ekranu = stdscr.getmaxyx()   # pobieranie wymiarow ekranu, zeby wiedziec gdzie jest "prawy gorny rog"
@@ -271,6 +286,15 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
             liczba_flag = postaw_flage(pozycja, plansza, liczba_flag)
             
         elif klawisz == 'e' or klawisz == 'E': # funkcja bedzie zwracac 0 - kontynuacja, 1 - wygrana, 2 - przegrana
+            
+            if czy_pierwszy_ruch(plansza, pozycja):  #jesli w pierwszym ruchu uzytkownik nie trafi na puste pole to wygeneruj plansze od nowa ;))
+                
+                while(plansza.tablica[pozycja[1]][pozycja[0]] != 0):
+                    
+                    plansza = None
+                    plansza = Plansza(szer,wys,liczba_flag)
+                    generowanie(plansza)
+
             wynik, liczba_flag = odkrywanie(pozycja, plansza, liczba_flag)
             if wynik == 0 and wygrana(plansza): 
                 wynik = 1
