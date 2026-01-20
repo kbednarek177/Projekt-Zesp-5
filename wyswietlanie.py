@@ -228,7 +228,7 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
         if wynik == 1 or wynik == 2: # po zakonczeniu gry
 
             tmph, tmpw = stdscr.getmaxyx()
-            okno_wyniku = curses.newwin(6, 60, tmph//2 - 2, tmpw//2 - 30)
+            okno_wyniku = curses.newwin(6, 40, tmph//2 - 2, tmpw//2 - 30)
             okno_wyniku.box()
 
             if wynik == 2:
@@ -266,8 +266,10 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
                 nadpisz_plik(tablica_dane, dane)
                 okno_informacyjne(stdscr, "ZAPIS", "Zapisano rozgrywkę")
                 pauza += (time.time() - tmp)
-
-
+            else:
+                tmp = time.time()
+                okno_informacyjne(stdscr, "NIE UDAŁO SIĘ ZAPISAĆ", "Użytkownik nie został zalogowany")
+                pauza += (time.time() - tmp)
 
         # PORUSZANIE SIE
         elif klawisz == 'KEY_LEFT' or klawisz == 'a' or klawisz == 'A':
@@ -486,11 +488,8 @@ def okno_tworzenia_konta(stdscr):
     okno = curses.newwin(box_h, box_w, box_y, box_x)
     okno.box()
 
-    if curses.has_colors():
-        curses.init_pair(17, curses.COLOR_RED, curses.COLOR_BLACK)
-        Blad = curses.color_pair(17)
-    else:
-        Blad = curses.A_BOLD
+    curses.init_pair(17, curses.COLOR_RED, curses.COLOR_BLACK)
+    Blad = curses.color_pair(17)
 
     LABEL_X = 4
     INPUT_X = 22  
