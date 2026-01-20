@@ -477,75 +477,97 @@ def okno_logowania(stdscr):
 
 
 def okno_tworzenia_konta(stdscr):
-
     h, w = stdscr.getmaxyx()
-    okno = curses.newwin(6, 60, h // 2 - 2, w // 2 - 30)
+    
+    box_h, box_w = 10, 45       
+    box_y = (h - box_h) // 2        
+    box_x = (w - box_w) // 2
+
+    okno = curses.newwin(box_h, box_w, box_y, box_x)
     okno.box()
 
-    curses.init_pair(17, curses.COLOR_RED, curses.COLOR_BLACK)  #nowy kolor do wyświetlania komunikatów o błędach
-    Blad = curses.color_pair(17)
+    if curses.has_colors():
+        curses.init_pair(17, curses.COLOR_RED, curses.COLOR_BLACK)
+        Blad = curses.color_pair(17)
+    else:
+        Blad = curses.A_BOLD
 
-    # Login
+    LABEL_X = 4
+    INPUT_X = 22  
+    
+    ROW_LOGIN   = 2
+    ROW_HASLO   = 4
+    ROW_POWTORZ = 6
+    ROW_MSG     = 8 
 
-    okno.addstr(1, 1, "LOGIN: ", curses.A_BOLD)
+    okno.addstr(ROW_LOGIN, LABEL_X,   "LOGIN:", curses.A_BOLD)
+    okno.addstr(ROW_HASLO, LABEL_X,   "HASŁO:", curses.A_BOLD)
+    okno.addstr(ROW_POWTORZ, LABEL_X, "POWTÓRZ HASŁO:", curses.A_BOLD)
+    
     okno.refresh()
 
-    okno_na_login = curses.newwin(1, 20, h//2 - 1, w // 2 - 10)
+    win_login   = curses.newwin(1, 20, box_y + ROW_LOGIN,   box_x + INPUT_X)
+    win_haslo   = curses.newwin(1, 20, box_y + ROW_HASLO,   box_x + INPUT_X)
+    win_powtorz = curses.newwin(1, 20, box_y + ROW_POWTORZ, box_x + INPUT_X)
 
-    okno_na_login.refresh()
+    login = ""
+    haslo = ""
 
     while True:
+        win_login.clear()
+        win_login.refresh()
 
-        okno_na_login.clear()
-        okno_na_login.refresh()
+        curses.curs_set(1)
+        textbox = Textbox(win_login)
+        login_input = textbox.edit().strip()
 
-        textbox_login = Textbox(okno_na_login)
-        nowy_login = textbox_login.edit().strip()
-
-        if not czy_wolna(nowy_login, tablica_dane[0]):
-            okno.addstr(4, 1, "LOGIN ZAJĘTY!", curses.A_BOLD | Blad)
+        if not czy_wolna(login_input, tablica_dane[0]):
+            curses.curs_set(0)
+            okno.addstr(ROW_MSG, 2, "LOGIN ZAJĘTY!".center(box_w-4), curses.A_BOLD | Blad)
             okno.refresh()
-        else:   #wymazanie komunikatu
-            okno.addstr(4, 1, " "*len("LOGIN ZAJĘTY!"))
-            okno.refresh()
-            break
-
-
-    # Hasło
-
-    okno.addstr(2, 1, "HASŁO: ", curses.A_BOLD)
-    okno.refresh()
-
-    okno_na_haslo = curses.newwin(1, 20, h//2, w // 2 - 10)
-    okno_na_haslo.refresh()
-
-    textbox_haslo = Textbox(okno_na_haslo)
-    nowe_haslo = textbox_haslo.edit()
-
-    okno.refresh()
-
-    # Powtórz hasło
-
-    okno.addstr(3, 1, "POWTÓRZ HASŁO: ", curses.A_BOLD)
-    okno.refresh()
-
-    okno_powtorz_haslo = curses.newwin(1, 20, h//2 + 1, w // 2 - 10)
-    okno_powtorz_haslo.refresh()
-
-    while True:
-        okno_powtorz_haslo.clear()
-        okno_powtorz_haslo.refresh()
-
-        textbox_powtorz_haslo = Textbox(okno_powtorz_haslo)
-        powtorz_haslo = textbox_powtorz_haslo.edit()
-
-        if(nowe_haslo != powtorz_haslo):
-            okno.addstr(4, 1, "HASŁA NIEZGODNE - SPRÓBUJ PONOWNIE", curses.A_BOLD | Blad)
+            curses.napms(1000)
+            okno.addstr(ROW_MSG, 2, " " * (box_w - 4)) 
             okno.refresh()
         else:
+            okno.addstr(ROW_MSG, 2, " " * (box_w - 4))
+            okno.refresh()
+            login = login_input
             break
 
-    return nowy_login.strip(), nowe_haslo.strip()
+    while True:
+        win_haslo.clear()
+        win_haslo.refresh()
+        
+        curses.curs_set(1)
+        textbox = Textbox(win_haslo)
+        haslo_input = textbox.edit().strip()
+
+        win_powtorz.clear()
+        win_powtorz.refresh()
+        
+        curses.curs_set(1)
+        textbox = Textbox(win_powtorz)
+        powtorz_input = textbox.edit().strip()
+
+        if haslo_input != powtorz_input:
+            curses.curs_set(0)
+            okno.addstr(ROW_MSG, 2, "HASŁA NIEZGODNE!".center(box_w-4), curses.A_BOLD | Blad)
+            okno.refresh()
+            curses.napms(1000)
+            okno.addstr(ROW_MSG, 2, " " * (box_w - 4))
+            okno.refresh()
+            
+            win_haslo.clear()
+            win_haslo.refresh()
+            win_powtorz.clear()
+            win_powtorz.refresh()
+        else:
+            haslo = haslo_input
+            break
+
+    curses.curs_set(0)
+
+    return login.strip(), haslo.strip()
 
 
 def czy_na_pewno_usun(stdscr): # potwierdzenie usunięcia konta
@@ -595,7 +617,7 @@ def czy_na_pewno_usun(stdscr): # potwierdzenie usunięcia konta
 
 def logowanie_interfejs(stdscr):
 
-    login, haslo = okno_logowania(stdscr) #funkcja zwraca podane przez użytkownika dane
+    login, haslo = okno_logowania(stdscr) # funkcja zwraca podane przez użytkownika dane
     
     stdscr.clear()    # zmazuje wszystko co bylo na ekranie
     stdscr.refresh()
@@ -613,7 +635,10 @@ def logowanie_interfejs(stdscr):
 
 def tworzenie_konta_interfejs(stdscr):
 
-    login, haslo = okno_tworzenia_konta(stdscr) #Tutaj użytkownik tworzy login i hasło
+    login, haslo = okno_tworzenia_konta(stdscr) # tutaj użytkownik tworzy login i hasło
+
+    stdscr.clear()    # zmazuje wszystko co bylo na ekranie
+    stdscr.refresh()
 
     if czy_wolna(login, tablica_dane[0]):
         zaloz_konto(tablica_dane, login, haslo)
@@ -819,6 +844,8 @@ def menu_glowne(stdscr):
 
             elif wybrana_opcja == 'Wyloguj':
                 czy_zalogowano = False
+                stdscr.clear()    # zmazuje wszystko co bylo na ekranie
+                stdscr.refresh()
                 okno_informacyjne(stdscr, "WYLOGOWANO", "Udało się wylogować!")
                 obecny_rzad = 0
 
