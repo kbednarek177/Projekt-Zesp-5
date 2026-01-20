@@ -52,7 +52,7 @@ Po programie użytkownik porusza się klawiaturą:
 
 ### Dodatkowe funkcje programu:
 - **KONTA** - możliwe jest utworzenie konta, zalogowanie się na nie, wylogowanie, usunięcie konta oraz
-(dostępne tylko po zalogowaniu) zapisywanie rozgrywki oraz rywalizowanie w rankingu z innymi użytkownikami
+(dostępne tylko po zalogowaniu) zapisywanie rozgrywki oraz rywalizowanie w rankingu z innymi lokalnymi użytkownikami
 - **RANKING** 
 	- użytkownicy rywalizują w trzech kategoriach (zależnych od poziomu trudności) - im w krótszym czasie się wygra, tym wyższą pozycję uzyskuje się w rankingu
 	- widoczne są 2 najlepsze wyniki na dany poziom trudności
@@ -62,6 +62,10 @@ Po programie użytkownik porusza się klawiaturą:
 ### Dodatkowe biblioteki:
 Do poprawnego działania programu należy pobrać:
 * bibliotekę **curses** `pip install windows-curses` (powinna być wbudowana w Pythona na systemach Linux i MacOC)
+
+### Uwaga!:
+Zbyt małe okno terminala może powodować błędy w wyświetlaniu i niepoprawne działanie programu.
+W przypadku gdy program nie odpowiada, zalecane jest użycie skrótu `CTRL+C`.
 
 ### Informacje:
 Repozytorium zostało utworzone na potrzeby projektu z **PWI 2025/2026**.
