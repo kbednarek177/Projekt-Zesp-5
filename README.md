@@ -56,8 +56,7 @@ Po programie użytkownik porusza się klawiaturą:
 - **RANKING** 
 	- użytkownicy rywalizują w trzech kategoriach (zależnych od poziomu trudności) - im w krótszym czasie się wygra, tym wyższą pozycję uzyskuje się w rankingu
 	- widoczne są 2 najlepsze wyniki na dany poziom trudności
-	- jeden użytkownik może zająć jedno miejsce w rankingu
- 	- w przypadku niewystarczającej liczby wyników, brakujące pozycje w rankingu uzupełniane są tekstem 'wolnemiejsce'	
+	- jeden użytkownik może zająć jedno miejsce w rankingu	
 
 ### Dodatkowe biblioteki:
 Do poprawnego działania programu należy pobrać:
