@@ -1,7 +1,7 @@
 import time
 import curses
 from konta import tablica_dane, directory, tablica_wynikow, nadpisz_plik, zapisz, zaloz_konto, zaloguj, czy_wolna, \
-    sprawdz_haslo, usun_konto, naj_wynik, dane, wczytaj
+    sprawdz_haslo, usun_konto, naj_wynik, dane, wczytaj, usun_zapis
 from curses import wrapper
 from saper import generowanie, odkrywanie, postaw_flage, wygrana, Plansza
 from curses.textpad import Textbox
@@ -290,21 +290,25 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
         elif klawisz == 'e' or klawisz == 'E': # funkcja bedzie zwracac 0 - kontynuacja, 1 - wygrana, 2 - przegrana
             
             if czy_pierwszy_ruch(plansza, pozycja):  #jesli w pierwszym ruchu uzytkownik nie trafi na puste pole to wygeneruj plansze od nowa ;))
-                
                 while(plansza.tablica[pozycja[1]][pozycja[0]] != 0):
-                    
                     plansza = None
                     plansza = Plansza(szer,wys,liczba_flag)
                     generowanie(plansza)
 
             wynik, liczba_flag = odkrywanie(pozycja, plansza, liczba_flag)
+
             if wynik == 0 and wygrana(plansza): 
                 wynik = 1
                 if czy_zalogowano:
                     naj_wynik(czas,poziom,login,tablica_dane[1])
+                    usun_zapis(login, tablica_dane)
                     nadpisz_plik(tablica_dane, dane)
+
             if wynik == 2:
                 boompozycja = pozycja
+                if czy_zalogowano:
+                    usun_zapis(login, tablica_dane)
+                    nadpisz_plik(tablica_dane, dane)
             # jesli wygrana lub przegrana to przerwie petle gry
             
         curses.napms(50)    # dodalam opoznienie by nie wykorzystywac 100% procesora
@@ -726,22 +730,24 @@ def menu_glowne(stdscr):
 
                 if czy_zalogowano:
                     try:
-                        t1, t2, liczba_flag, czas = wczytaj(login, tablica_dane[2], tablica_dane[3], tablica_dane[4])
+                        t = wczytaj(login, tablica_dane[2], tablica_dane[3], tablica_dane[4])
+                        if t != [0]:
+                            t1, t2, liczba_flag, czas = t
+                        
+                            wys, szer = len(t1), len(t1[0])
+                            poziom=""
+                            if szer == 9:
+                                poziom = "l"
+                            elif szer == 11:
+                                poziom = "s"
+                            elif szer == 13:
+                                poziom = "t"
 
-                        wys, szer = len(t1), len(t1[0])
-                        poziom=""
-                        if szer == 9:
-                            poziom = "l"
-                        elif szer == 11:
-                            poziom = "s"
-                        elif szer == 13:
-                            poziom = "t"
+                            plansza = Plansza(szer, wys, 99) # nie przechowujemy liczby bomb, chyba zbedne
+                            plansza.tablica = t1
+                            plansza.wyswietlana = t2
 
-                        plansza = Plansza(szer, wys, 99) # nie przechowujemy liczby bomb, chyba zbedne
-                        plansza.tablica = t1
-                        plansza.wyswietlana = t2
-
-                        rozgrywka(stdscr, plansza, liczba_flag, poziom, czas, login=login, czy_zalogowano=czy_zalogowano)
+                            rozgrywka(stdscr, plansza, liczba_flag, poziom, czas, login=login, czy_zalogowano=czy_zalogowano)
                     except Exception as e:
                          okno_informacyjne(stdscr, "BŁĄD", "Nie udalo sie wczytac gry.")
             
