@@ -58,8 +58,6 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
     curses.init_pair(16, curses.COLOR_BLACK, curses.COLOR_WHITE)
     Miganie = curses.color_pair(16)
 
-
-
     # instrukcja na dole ekranu
     instrukcja = curses.newwin(2, szerokosc_ekranu, wysokosc_ekranu - 2, 0)
     instrukcja.refresh()
@@ -123,7 +121,7 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
         # FLAGI:
         okno_flagi.erase()
 
-        tekst_flagi = f"Pozostale flagi: {liczba_flag}"
+        tekst_flagi = f"Pozostałe flagi: {liczba_flag}"
         okno_flagi.addstr(0, 0, tekst_flagi)
 
         okno_flagi.refresh()
@@ -132,8 +130,8 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
         # INSTRUKCJA
         instrukcja.erase()
         try:
-            tekst1 = "[A][W][S][D]/STRZALKI - poruszanie sie"
-            tekst2 = "[F] - flaga, [E] - odkryj pole, [Z] - zapisz, [Q] - wyjdz"
+            tekst1 = "[A][W][S][D]/STRZAŁKI - poruszanie się"
+            tekst2 = "[F] - flaga, [E] - odkryj pole, [Z] - zapisz, [Q] - wyjdź"
             
             # srodek wzgledem calego ekranu
             x1 = max(0, (szerokosc_ekranu // 2) - (len(tekst1) // 2))
@@ -240,12 +238,12 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
                 okno_planszy.addstr(tmpy, tmpx, ' ', Boom)
                 okno_planszy.addstr(tmpy, tmpx+2, ' ', Boom)
                 okno_wyniku.addstr(1, 2, "Przegrana!", curses.A_BOLD)
-                okno_wyniku.addstr(2, 2, "Bylo blisko!")
-                okno_wyniku.addstr(3, 2, "Nacisnij dowolny klawisz aby wyjsc :3", curses.A_DIM)
+                okno_wyniku.addstr(2, 2, "Było blisko!")
+                okno_wyniku.addstr(3, 2, "Naciśnij dowolny klawisz aby wyjść", curses.A_DIM)
             else:
-                okno_wyniku.addstr(1, 2, "Wygrana!!!", curses.A_BOLD)
+                okno_wyniku.addstr(1, 2, "Wygrana!", curses.A_BOLD)
                 okno_wyniku.addstr(2, 2, "Gratulacje!")
-                okno_wyniku.addstr(3, 2, "Nacisnij dowolny klawisz aby wyjsc :3", curses.A_DIM)
+                okno_wyniku.addstr(3, 2, "Naciśnij dowolny klawisz aby wyjść", curses.A_DIM)
 
             okno_planszy.refresh()
             okno_wyniku.refresh()
@@ -312,15 +310,21 @@ def rozgrywka(stdscr, plansza, liczba_flag, poziom, czas=0, login=None, czy_zalo
         curses.napms(50)    # dodalam opoznienie by nie wykorzystywac 100% procesora
 
 
-# FUNKCJE TYMCZASOWE - tylko do testowania ;))
 def okno_informacyjne(stdscr, tytul, wiadomosc): # proste okno, czeka na input
     h, w = stdscr.getmaxyx()
-    okno = curses.newwin(6, 60, h//2 - 2, w//2 - 30)
+
+    box_w = 45
+    box_h = 5
+
+    y = (h - box_h) // 2
+    x = (w - box_w) // 2
+
+    okno = curses.newwin(box_h, box_w, y, x)
     okno.box()
     
     okno.addstr(1, 2, tytul, curses.A_BOLD)
     okno.addstr(2, 2, wiadomosc)
-    okno.addstr(3, 2, "Nacisnij dowolny klawisz aby wyjsc", curses.A_DIM)
+    okno.addstr(3, 2, "Naciśnij dowolny klawisz aby wyjść", curses.A_DIM)
     okno.refresh()
     
     stdscr.nodelay(False) 
@@ -331,26 +335,29 @@ def okno_informacyjne(stdscr, tytul, wiadomosc): # proste okno, czeka na input
 
 
 def wyswietl_zasady(stdscr):
+    curses.init_pair(18, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    ZIELONY = curses.color_pair(18)
+
     # Lista krotek ... dlugich krotek niestety
     tresc = [
-        ("ZASADY GRY", curses.A_BOLD | curses.COLOR_GREEN),
+        ("--- ZASADY GRY ---", ZIELONY),
         ("", 0),
         ("[F] - postawienie flagi", 0),
-        ("[Q] - powrot do wyboru poziomu", 0),
+        ("[Q] - powrót do wyboru poziomu", 0),
         ("[E] - odkrycie pola", 0),
         ("[Z] - zapisanie gry (gdy zalogowano)", 0),
-        ("[W][A][S][D] / strzalki - ruch", 0),
+        ("[W][A][S][D] / strzałki - ruch", 0),
         ("", 0),
-        ("Pola sa trzech typow:", 0),
+        ("Pola sa trzech typów:", 0),
         ("1. Cyfry, 2. Puste, 3. Miny", 0),
         ("", 0),
-        ("Odkrycie miny oznacza PRZEGRANA.", curses.A_BOLD),
-        ("Cyfra mowi ile min styka sie z polem.", 0),
-        ("(maksymalnie 8 sasiadow).", 0),
-        ("Puste pole oznacza brak min wokol.", 0),
+        ("Odkrycie miny oznacza PRZEGRANĄ.", curses.A_BOLD),
+        ("Cyfra mówi ile min styka sie z polem.", 0),
+        ("(maksymalnie 8 sąsiadów).", 0),
+        ("Puste pole oznacza brak min wokół.", 0),
         ("", 0),
-        ("Celem gry jest odkrycie wszystkich pol BEZ min.", 0),
-        ("Stawianie flag sluzy do oznaczania min.", 0)
+        ("Celem gry jest odkrycie wszystkich pól BEZ min.", 0),
+        ("Stawianie flag służy do oznaczania min.", 0)
     ]
 
     while True:
@@ -366,14 +373,13 @@ def wyswietl_zasady(stdscr):
 
         try:
             okno = curses.newwin(h, w, y, x)
-            okno.box()
             
             for i, (linia, atrybut) in enumerate(tresc):
                 # centrowanie tekstu wewnatrz ramki
                 pos_x = (w - len(linia)) // 2
                 okno.addstr(i + 2, pos_x, linia, atrybut)
                 
-            stopka = "[ nacisnij dowolny klawisz aby wyjsc ]"
+            stopka = "[ naciśnij dowolny klawisz aby wyjść ]"
             okno.addstr(h - 1, (w - len(stopka)) // 2, stopka, curses.A_DIM)
             okno.refresh()
 
@@ -387,69 +393,83 @@ def wyswietl_zasady(stdscr):
 
 
 def okno_logowania(stdscr):
-
     h, w = stdscr.getmaxyx()
-    okno = curses.newwin(5, 60, h // 2 - 2, w // 2 - 30)
+    box_h, box_w = 10, 40        # wysokosc i szerokosc ramki
+    box_y = (h - box_h) // 2        
+    box_x = (w - box_w) // 2
+
+
+    okno = curses.newwin(box_h, box_w, box_y, box_x)
     okno.box()
 
-    curses.init_pair(17, curses.COLOR_RED, curses.COLOR_BLACK)  #nowy kolor do wyswietlania komunikatow o bledach
+    curses.init_pair(17, curses.COLOR_RED, curses.COLOR_BLACK)  # nowy kolor do wyswietlania komunikatow o bledach
     Blad = curses.color_pair(17)
 
     # Login
+    LABEL_X = 4
+    INPUT_X = 12
+    ROW_LOGIN = 2
+    ROW_HASLO = 4
+    ROW_MSG   = 6
 
-    okno.addstr(1, 1, "LOGIN: ", curses.A_BOLD)
+    okno.addstr(ROW_LOGIN, LABEL_X, "LOGIN:", curses.A_BOLD)
+    okno.addstr(ROW_HASLO, LABEL_X, "HASŁO:", curses.A_BOLD)
+
+    stopka = "[ Nacisnij 2x ENTER aby wrocic ]"
+    
+    stopka_x = (box_w - len(stopka)) // 2
+    okno.addstr(box_h - 2, (box_w - len(stopka)) // 2, stopka, curses.A_DIM)
+
     okno.refresh()
 
-    okno_na_login = curses.newwin(1, 20, h//2 - 1, w // 2 - 20)
+    okno_na_login = curses.newwin(1, 20, box_y + ROW_LOGIN, box_x + INPUT_X)
+    okno_na_haslo = curses.newwin(1, 20, box_y + ROW_HASLO, box_x + INPUT_X)
 
-    okno_na_login.refresh()
+    login = ""
+    haslo = ""
 
     while True:
-
         okno_na_login.clear()
         okno_na_login.refresh()
 
+        curses.curs_set(1)
         textbox_login = Textbox(okno_na_login)
         login = textbox_login.edit().strip()
 
         if czy_wolna(login, tablica_dane[0]):
-            okno.addstr(3, 1, "NIE MA TAKIEGO LOGINU!", curses.A_BOLD | Blad)
+            curses.curs_set(0)
+            okno.addstr(ROW_MSG, 2, "NIE MA TAKIEGO LOGINU!".center(box_w-4), curses.A_BOLD | Blad)
+            okno.refresh()
+            curses.napms(1000)
+            okno.addstr(ROW_MSG, 2, " " * (box_w - 4)) 
             okno.refresh()
         else:   #wymazanie komunikatu
-            okno.addstr(3, 1, " "*len("NIE MA TAKIEGO LOGINU!"))
+            okno.addstr(ROW_MSG, 2, " " * (box_w - 4))
             okno.refresh()
             break
 
-
-
     # Hasło
-
-    okno.addstr(2, 1, "HASŁO: ", curses.A_BOLD)
-    okno.refresh()
-
-    okno_na_haslo = curses.newwin(1, 20, h//2, w // 2 - 20)
-    okno_na_haslo.refresh()
 
     while True:
         okno_na_haslo.clear()
         okno_na_haslo.refresh()
 
+        curses.curs_set(1)
         textbox_haslo = Textbox(okno_na_haslo)
         haslo = textbox_haslo.edit().strip()
 
         if not sprawdz_haslo(login, haslo, tablica_dane[0]):
-            okno.addstr(3, 1, "ZŁE HASŁO!", curses.A_BOLD | Blad)
+            curses.curs_set(0)
+            okno.addstr(ROW_MSG, 2, "ZŁE HASŁO!".center(box_w-4), curses.A_BOLD | Blad)
             okno.refresh()
-            time.sleep(1)
-            okno.addstr(3, 1, " " * len("ZŁE HASŁO!"))
+            curses.napms(1000)
+            okno.addstr(ROW_MSG, 2, " " * (box_w - 4))
             okno.refresh()
         else:
             break
 
-
-
+    curses.curs_set(0)
     return login.strip(), haslo.strip()
-
 
 
 def okno_tworzenia_konta(stdscr):
@@ -523,6 +543,7 @@ def okno_tworzenia_konta(stdscr):
 
     return nowy_login.strip(), nowe_haslo.strip()
 
+
 def czy_na_pewno_usun(stdscr): #POTWIERDZENIE ZAMKNIĘCIA KONTA
 
 
@@ -548,9 +569,16 @@ def czy_na_pewno_usun(stdscr): #POTWIERDZENIE ZAMKNIĘCIA KONTA
 
 def logowanie_interfejs(stdscr):
 
-    login, haslo= okno_logowania(stdscr) #funkcja zwraca podane przez użytkownika dane
+    login, haslo = okno_logowania(stdscr) #funkcja zwraca podane przez użytkownika dane
+    
+    stdscr.clear()    # zmazuje wszystko co bylo na ekranie
+    stdscr.refresh()
+    
+    if not login:
+        return None
+    
     if zaloguj(login, haslo, tablica_dane[0]) != -1:
-        okno_informacyjne(stdscr, "LOGOWANIE", "Udalo sie zalogowac!")
+        okno_informacyjne(stdscr, "LOGOWANIE", "Udało się zalogować!")
         return login
     else:
         okno_informacyjne(stdscr, "LOGOWANIE", "Błędne dane")
@@ -627,8 +655,8 @@ def menu_glowne(stdscr):
 
     #stdscr.timeout(50) -> mozliwe ze to by bylo lepsze zamiast nodelay + napms ???
     
-    menu_gosc = ['Nowa Gra', 'Zasady Gry', 'Zaloguj', 'Utworz Konto', 'Wyjscie']
-    menu_user = ['Nowa Gra', 'Wczytaj Gre', 'Ranking', 'Zasady Gry', 'Wyloguj', 'Usun Konto', 'Wyjscie']
+    menu_gosc = ['Nowa Gra', 'Zasady Gry', 'Zaloguj', 'Utwórz Konto', 'Wyjście']
+    menu_user = ['Nowa Gra', 'Wczytaj Grę', 'Ranking', 'Zasady Gry', 'Wyloguj', 'Usuń Konto', 'Wyjście']
     poziomy = ['Latwy  ★☆☆☆☆ ', 'Sredni ★★★☆☆ ', 'Trudny ★★★★★ ']
 
     login = None
@@ -685,7 +713,7 @@ def menu_glowne(stdscr):
         elif klawisz == '\n' or klawisz == 'KEY_ENTER':
             wybrana_opcja = ekran[iterator][obecny_rzad]
             
-            if wybrana_opcja == 'Wyjscie':
+            if wybrana_opcja == 'Wyjście':
                 break
             
             elif wybrana_opcja == 'Nowa Gra':
@@ -694,7 +722,7 @@ def menu_glowne(stdscr):
                 obecny_rzad = 0
 
 
-            elif wybrana_opcja == 'Wczytaj Gre':
+            elif wybrana_opcja == 'Wczytaj Grę':
 
                 if czy_zalogowano:
                     try:
@@ -715,23 +743,20 @@ def menu_glowne(stdscr):
 
                         rozgrywka(stdscr, plansza, liczba_flag, poziom, czas, login=login, czy_zalogowano=czy_zalogowano)
                     except Exception as e:
-                         okno_informacyjne(stdscr, "BLAD", "Nie udalo sie wczytac gry.")
-
-                else:
-                    okno_informacyjne(stdscr, "WCZYTYWANIE", "Musisz byc zalogowany!")
-                    stdscr.clear()   #wraca do menu
+                         okno_informacyjne(stdscr, "BŁĄD", "Nie udalo sie wczytac gry.")
             
             elif wybrana_opcja == 'Zasady Gry':
                 wyswietl_zasady(stdscr)
             
             elif wybrana_opcja == 'Zaloguj':
                 login_zalogowanego = logowanie_interfejs(stdscr)
+
                 if login_zalogowanego: # okno na wpisywanie loginu, okno na wpisywanie hasla) + info czy sie udalo
                     czy_zalogowano = True
                     login = login_zalogowanego
                     obecny_rzad = 0
 
-            elif wybrana_opcja == 'Utworz Konto':
+            elif wybrana_opcja == 'Utwórz Konto':
                 nowy_login = tworzenie_konta_interfejs(stdscr)
                 if nowy_login: # okno na wpisywanie loginu, okno na wpisywanie hasla) + info czy sie udalo
                     czy_zalogowano = True
@@ -743,14 +768,11 @@ def menu_glowne(stdscr):
                 okno_informacyjne(stdscr, "WYLOGOWANO", "Udalo sie wylogowac!")
                 obecny_rzad = 0
 
-            elif wybrana_opcja == 'Usun Konto':
+            elif wybrana_opcja == 'Usuń Konto':
                 if usuwanie_konta_interfejs(stdscr): # interfejs (czy na pewno chcesz usnac konto? Tak/Nie + trzeba wyrzucic to konto z pliku ...)
                     usun_konto(login, tablica_dane)
                     czy_zalogowano = False
                     obecny_rzad = 0
-
-            elif wybrana_opcja == 'Wczytaj Gre':
-                okno_informacyjne(stdscr, "WCZYTYWANIE", "Funkcja w budowie...")
 
             elif wybrana_opcja == 'Ranking':
                 wyswietl_ranking(stdscr, tablica_dane)
