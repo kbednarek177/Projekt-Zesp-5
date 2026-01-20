@@ -215,11 +215,13 @@ def str_ll_przetlumacz(napis):
     temp = []
     i = dl_rozmiar+1
     while (i < len(napis)):
-        if(napis[i] != '-'):
+        if(napis[i] != '-' and napis[i] != 'f'):
             temp.append(int(napis[i]))
-        else:
+        elif(napis[i] == '-'):
             temp.append(-int(napis[i+1]))
             i = i + 1
+        elif(napis[i] == 'f'):
+            temp.append(10)
         if(len(temp) == int(rozmiar)):
             wynik.append(temp)
             temp = []
@@ -246,6 +248,20 @@ def ll_str_przetlumacz(lista):
     
     return wynik
 
+def usun_dz(lista):
+    lista1 = []
+    temp = []
+    for x in lista:
+        for y in x:
+            if(y == 10):
+                temp.append('f')
+            else:
+                temp.append(y)
+        lista1.append(temp)
+        temp = []
+                
+    return lista1
+
 
         ## nazwa, og plansza, plansza z odkrytymi polami, pozostałe flagi, czas, zapisane_dane[2], zapisane_dane[3], zapisane_dane[4]
 def zapisz(nazwa, numery, pola, poz_flagi, czas, nazwy_zapis_num, nazwy_zapis_pola, nazwy_zapis_czas):
@@ -255,7 +271,7 @@ def zapisz(nazwa, numery, pola, poz_flagi, czas, nazwy_zapis_num, nazwy_zapis_po
         e_poz_flagi = '0' + e_poz_flagi
     
     nazwy_zapis_num[nazwa] = e_poz_flagi + ll_str_przetlumacz(numery)
-    nazwy_zapis_pola[nazwa] = e_poz_flagi + ll_str_przetlumacz(pola)
+    nazwy_zapis_pola[nazwa] = e_poz_flagi + ll_str_przetlumacz(usun_dz(pola))
     nazwy_zapis_czas[nazwa] = str(czas)
     
     
