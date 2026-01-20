@@ -23,7 +23,8 @@ Odkrycie **pola minowego** oznacza **przegraną**.
 
 **Puste pole** oznacza, że wokół niego nie znajduje się żadna mina.
 
-Celem gry jest odsłonięcie wszystkich pól na planszy które **nie zawierają min** oraz oznakowanie **flagami** pól minowych.
+Celem gry jest odsłonięcie wszystkich pól na planszy które **nie zawierają min**.
+**Flagi** są narzędziem pomocniczym - można nimi oznaczać, które pola podejrzewa się o bycie polami minowymi.
 
 ### Warianty gry:
 Dostępne są trzy poziomy trudności:
@@ -56,6 +57,7 @@ Po programie użytkownik porusza się klawiaturą:
 	- użytkownicy rywalizują w trzech kategoriach (zależnych od poziomu trudności) - im w krótszym czasie się wygra, tym wyższą pozycję uzyskuje się w rankingu
 	- widoczne są 2 najlepsze wyniki na dany poziom trudności
 	- jeden użytkownik może zająć jedno miejsce w rankingu
+ 	- w przypadku niewystarczającej liczby wyników, brakujące pozycje w rankingu uzupełniane są tekstem 'wolnemiejsce'	
 
 ### Dodatkowe biblioteki:
 Do poprawnego działania programu należy pobrać:
