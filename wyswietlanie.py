@@ -548,26 +548,48 @@ def okno_tworzenia_konta(stdscr):
     return nowy_login.strip(), nowe_haslo.strip()
 
 
-def czy_na_pewno_usun(stdscr): #POTWIERDZENIE ZAMKNIĘCIA KONTA
-
-
+def czy_na_pewno_usun(stdscr): # potwierdzenie usunięcia konta
     h, w = stdscr.getmaxyx()
-    okno = curses.newwin(3, 60, h // 2 - 2, w // 2 - 30)
-    okno.box()
 
+    box_w = 39
+    box_h = 6
+
+    y = (h - box_h) // 2
+    x = (w - box_w) // 2
+
+    okno = curses.newwin(box_h, box_w, y, x)
+    
     curses.init_pair(17, curses.COLOR_RED, curses.COLOR_BLACK)
     Blad = curses.color_pair(17)
+    
+    okno.attron(Blad)
+    okno.box()
+    okno.attroff(Blad)
+    
+    pytanie = "Czy na pewno chcesz usunąć konto?"
+    legenda = "[T] - TAK, [N] - NIE"
 
-    okno.addstr(1, 1, "CZY NA PEWNO CHCESZ USUNĄĆ KONTO? [T/N]", curses.A_BOLD | Blad)
+    def srodek_x(txt):
+        return (box_w - len(txt)) // 2
+
+    okno.addstr(1, srodek_x(pytanie), pytanie, Blad)
+    okno.addstr(2, srodek_x(legenda), legenda, Blad)
+    
     okno.refresh()
 
-    okno_na_odp = curses.newwin(1, 3, h // 2 - 1, w // 2 + 20)
-    okno_na_odp.refresh()
+    input_y = y + 4
+    input_x = x + (box_w // 2) - 1
 
+    okno_na_odp = curses.newwin(1, 3, input_y, input_x)
+    okno_na_odp.bkgd(' ', Blad)
+    curses.curs_set(1)
+
+    okno_na_odp.refresh()
     textbox_odp = Textbox(okno_na_odp)
 
     odp = textbox_odp.edit().strip().upper()
 
+    curses.curs_set(0)
     return odp == 'T'
 
 
@@ -603,48 +625,75 @@ def tworzenie_konta_interfejs(stdscr):
         return None
 
 
-def usuwanie_konta_interfejs(stdscr): #ZWRACA T JEŚLI UŻYTKOWNIK POTWIERDZI USUNIĘCIE KONTA
+def usuwanie_konta_interfejs(stdscr): # ZWRACA T JEŚLI UŻYTKOWNIK POTWIERDZI USUNIĘCIE KONTA
+    stdscr.clear() 
+    stdscr.refresh()
+
     if(czy_na_pewno_usun(stdscr)):
-        okno_informacyjne(stdscr, "USUWANIE KONTA", "Konto zostalo usuniete")
+        stdscr.clear()
+        stdscr.refresh()
+        okno_informacyjne(stdscr, "USUWANIE KONTA", "Konto zostało usunięte")
         return True
 
     else:
+        stdscr.clear()
+        stdscr.refresh()
         okno_informacyjne(stdscr, "USUWANIE KONTA", "Anulowano")
         return False
 
 
 def wyswietl_ranking(stdscr, tablica_dane):
-
     stdscr.erase()
     h, w = stdscr.getmaxyx()
-    okno = curses.newwin(16 , 50, h//2 - 10, w//2 - 25)
-    okno.box()
+    
+    win_h, win_w = 17, 50
+    okno = curses.newwin(win_h, win_w, h//2 - 9, w//2 - 25)
 
-    # Pobiera ranking z funkcji tablica_wynikow
+    curses.init_pair(19, curses.COLOR_BLUE, curses.COLOR_BLACK)
+    Ranking = curses.color_pair(19)
+
+    tytul = "--- RANKING ---"
+    okno.addstr(1, (win_w - len(tytul)) // 2, tytul, curses.A_BOLD | Ranking)
+
     nazwy_wynik = tablica_dane[1]
     wynik = tablica_wynikow(nazwy_wynik)
 
-    poziomy = ["LATWY", "SREDNI", "TRUDNY"]
+    poziomy = ["ŁATWY", "ŚREDNI", "TRUDNY"]
 
     for p in range(3):
-        okno.addstr(3 + p * 4, 2, poziomy[p] + ":", curses.A_BOLD)  # wyswietla nazwy poziomow
+        nazwa_poziomu = f"{poziomy[p]}"
+        pos_y_poziom = 3 + p * 4
+        okno.addstr(pos_y_poziom, (win_w - len(nazwa_poziomu)) // 2, nazwa_poziomu, curses.A_BOLD | Ranking)
 
         for i in range(2):   # po dwa wyniki na poziom
             wynik_str = wynik[p * 2 + i]
             podziel = wynik_str.split("-", 1)
-            czas = podziel[0]
+            czas_raw = podziel[0]
             login = podziel[1]
 
-            if czas == "-1":
+            if czas_raw == "-1":
                 wynik_do_wypisania = f"{i + 1}. Brak wyniku"
             else:
-                wynik_do_wypisania = f"{i + 1}. {login}: {czas}s"
+                try:
+                    sekundy = int(czas_raw)
+                    godziny = sekundy // 3600
+                    minuty = (sekundy % 3600) // 60
+                    sek = sekundy % 60
+                    czas_format = f"{godziny:02}:{minuty:02}:{sek:02}"
+                except ValueError:
+                    czas_format = "[ - ]"
 
-            okno.addstr(4 + p * 4 + i, 4, wynik_do_wypisania)
+                wynik_do_wypisania = f"{i + 1}. {login}: {czas_format}"
+
+            pos_y_wynik = pos_y_poziom + 1 + i
+            okno.addstr(pos_y_wynik, (win_w - len(wynik_do_wypisania)) // 2, wynik_do_wypisania)
+
+    stopka = "[ Naciśnij dowolny klawisz aby wyjść ]"
+    okno.addstr(win_h - 2, (win_w - len(stopka)) // 2, stopka, curses.A_DIM)
 
     okno.refresh()
 
-    stdscr.nodelay(False)  #Żeby nie zamykało okna od razu
+    stdscr.nodelay(False)
     okno.getch()
     stdscr.nodelay(True)
 
@@ -667,8 +716,7 @@ def menu_glowne(stdscr):
     czy_zalogowano = False
     iterator = 0
     obecny_rzad = 0
-
-
+    
 
     while True:
         stdscr.erase()
@@ -749,7 +797,7 @@ def menu_glowne(stdscr):
 
                             rozgrywka(stdscr, plansza, liczba_flag, poziom, czas, login=login, czy_zalogowano=czy_zalogowano)
                     except Exception as e:
-                         okno_informacyjne(stdscr, "BŁĄD", "Nie udalo sie wczytac gry.")
+                         okno_informacyjne(stdscr, "BŁĄD", "Nie udało się wczytać gry.")
             
             elif wybrana_opcja == 'Zasady Gry':
                 wyswietl_zasady(stdscr)
@@ -771,7 +819,7 @@ def menu_glowne(stdscr):
 
             elif wybrana_opcja == 'Wyloguj':
                 czy_zalogowano = False
-                okno_informacyjne(stdscr, "WYLOGOWANO", "Udalo sie wylogowac!")
+                okno_informacyjne(stdscr, "WYLOGOWANO", "Udało się wylogować!")
                 obecny_rzad = 0
 
             elif wybrana_opcja == 'Usuń Konto':
